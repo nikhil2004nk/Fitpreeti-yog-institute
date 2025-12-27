@@ -1,0 +1,38 @@
+[
+  {
+    "id": "yoga-1",
+    "name": "Hatha Yoga Flow",
+    "description": "Traditional yoga practice focusing on breath control, posture alignment, and mindful movement for all levels.",
+    "duration": "60 min",
+    "price": 299,
+    "image": "/images/yoga-hero.jpg",
+    "category": "yoga"
+  },
+  {
+    "id": "zumba-1", 
+    "name": "Zumba Fitness Party",
+    "description": "High-energy Latin dance workout that combines cardio with fun choreography. Perfect for stress relief!",
+    "duration": "45 min",
+    "price": 349,
+    "image": "/images/zumba-hero.jpg",
+    "category": "zumba"
+  },
+  {
+    "id": "dance-1",
+    "name": "Bollywood Dance Fusion",
+    "description": "Energetic Bollywood and contemporary dance mix. Learn iconic moves from popular Hindi films.",
+    "duration": "60 min", 
+    "price": 399,
+    "image": "/images/dance-hero.jpg",
+    "category": "dance"
+  },
+  {
+    "id": "fitness-1",
+    "name": "Strength & HIIT",
+    "description": "High-intensity interval training with bodyweight and resistance exercises for full-body transformation.",
+    "duration": "50 min",
+    "price": 449,
+    "image": "/images/fitness-hero.jpg",
+    "category": "fitness"
+  }
+]

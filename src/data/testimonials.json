@@ -1,0 +1,82 @@
+[
+  {
+    "id": "1",
+    "name": "Priya Sharma",
+    "role": "Zumba Regular",
+    "image": "https://images.unsplash.com/photo-1494790108755-2616b612b786?w=200&h=200&fit=crop&crop=face",
+    "quote": "FitPreeti transformed my fitness journey! The instructors are amazing and the classes are so much fun.",
+    "rating": 5
+  },
+  {
+    "id": "2",
+    "name": "Rahul Mehra",
+    "role": "Yoga + Zumba",
+    "image": "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=200&h=200&fit=crop&crop=face",
+    "quote": "Perfect balance of yoga for calm mornings and Zumba for energetic evenings. Highly recommend!",
+    "rating": 5
+  },
+  {
+    "id": "3",
+    "name": "Aishwarya K.",
+    "role": "Dance Enthusiast",
+    "image": "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=200&h=200&fit=crop&crop=face",
+    "quote": "The Bollywood classes are pure joy! I've never felt more confident in my body.",
+    "rating": 5
+  },
+  {
+    "id": "4",
+    "name": "Sumit Verma",
+    "role": "Office Professional",
+    "image": "https://images.unsplash.com/photo-1544723795-3fb6469f5b39?w=200&h=200&fit=crop&crop=face",
+    "quote": "Evening strength and HIIT classes help me de‑stress after work and stay consistent with my health.",
+    "rating": 5
+  },
+  {
+    "id": "5",
+    "name": "Neha Gupta",
+    "role": "Beginner Yogi",
+    "image": "https://images.unsplash.com/photo-1524504388940-b1c1722653e1?w=200&h=200&fit=crop&crop=face",
+    "quote": "I joined as a complete beginner. The way they explain poses and breathing made yoga feel simple and safe.",
+    "rating": 5
+  },
+  {
+    "id": "6",
+    "name": "Vikas Singh",
+    "role": "Online Member",
+    "image": "https://images.unsplash.com/photo-1552374196-1ab2a1c593e8?w=200&h=200&fit=crop&crop=face",
+    "quote": "Online batches fit perfectly with my busy schedule. It feels like I am in the studio even from home.",
+    "rating": 5
+  },
+  {
+    "id": "7",
+    "name": "Sneha R.",
+    "role": "Weight Loss Journey",
+    "image": "https://images.unsplash.com/photo-1525134479668-1bee5c7c6845?w=200&h=200&fit=crop&crop=face",
+    "quote": "In three months I feel lighter, more energetic and more confident. The trainers focus on long‑term results.",
+    "rating": 5
+  },
+  {
+    "id": "8",
+    "name": "Ankit Jain",
+    "role": "Corporate Participant",
+    "image": "https://images.unsplash.com/photo-1544723795-3fb0b90c07e6?w=200&h=200&fit=crop&crop=face",
+    "quote": "Our office yoga session with FitPreeti was the best wellness activity we’ve had. The whole team loved it.",
+    "rating": 5
+  },
+  {
+    "id": "9",
+    "name": "Ritu Malik",
+    "role": "Morning Yoga",
+    "image": "https://images.unsplash.com/photo-1525130413817-d45c1d127c42?w=200&h=200&fit=crop&crop=face",
+    "quote": "Morning yoga at the studio sets the tone for my entire day. It’s calm, disciplined and very positive.",
+    "rating": 5
+  },
+  {
+    "id": "10",
+    "name": "Karan Thakur",
+    "role": "Dance + Fitness",
+    "image": "https://images.unsplash.com/photo-1544723795-432537d12f36?w=200&h=200&fit=crop&crop=face",
+    "quote": "The mix of dance, cardio and strength training keeps workouts exciting. I actually look forward to classes now.",
+    "rating": 5
+  }
+]
