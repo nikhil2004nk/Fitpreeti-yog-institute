@@ -3,6 +3,7 @@ import { useState, useEffect } from 'react';
 import { NavLink, Link, useNavigate } from 'react-router-dom';
 import { Menu, X } from 'lucide-react';
 import { ROUTES } from '../../constants/routes';
+import { getAssetUrl } from '../../utils/url';
 
 export const Navbar: React.FC = () => {
   const [isOpen, setIsOpen] = useState(false);
@@ -66,9 +67,13 @@ export const Navbar: React.FC = () => {
           <div className="flex items-center space-x-2">
             <Link to={ROUTES.HOME} className="flex items-center space-x-2">
               <img
-                src="/logo.png"
+                src={getAssetUrl('/logo.png')}
                 alt="FitPreeti Logo"
                 className="h-10 w-10 object-contain"
+                onError={(e) => {
+                  // Fallback to a placeholder if the image fails to load
+                  (e.target as HTMLImageElement).src = 'https://via.placeholder.com/40';
+                }}
               />
               <div className="flex flex-col items-center leading-tight font-bold font-sans">
                 <span className={`text-2xl font-bold ${isScrolled ? 'text-neutral-900' : 'text-white'}`}>

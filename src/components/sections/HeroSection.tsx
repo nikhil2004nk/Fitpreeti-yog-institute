@@ -1,6 +1,6 @@
 import { motion } from 'framer-motion';
 import { Button } from '../ui/Button';
-import services from '../../data/services.json';
+import services from '../../data/services';
 import type { ReactNode } from 'react';
 
 import { Dumbbell, Music, Flame, Leaf } from 'lucide-react';

@@ -2,7 +2,7 @@ import { motion, type Variants } from "framer-motion";
 import type { Service } from "../../types";
 import { Button } from "../ui/Button";
 import { Card } from "../ui/Card";
-import services from "../../data/services.json";
+import services from "../../data/services";
 
 /* =======================
    Animations

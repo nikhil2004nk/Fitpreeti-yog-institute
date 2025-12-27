@@ -1,3 +1,5 @@
+import { getAssetUrl } from '../utils/url';
+
 export interface Trainer {
   id: string;
   name: string;
@@ -14,7 +16,7 @@ export interface Trainer {
   };
 }
 
-export const trainers: Trainer[] = [
+const trainerData = [
   {
     id: 'preeti',
     name: 'Preeti',
@@ -72,3 +74,11 @@ export const trainers: Trainer[] = [
     }
   }
 ];
+
+// Process the trainers data to include proper image URLs
+const trainers: Trainer[] = trainerData.map(trainer => ({
+  ...trainer,
+  image: getAssetUrl(trainer.image)
+}));
+
+export { trainers };

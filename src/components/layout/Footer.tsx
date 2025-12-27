@@ -1,6 +1,7 @@
 import instituteData from '../../data/institute.json';
 import { Link } from 'react-router-dom';
 import { FaWhatsapp, FaInstagram, FaFacebook, FaYoutube, FaPhone, FaEnvelope, FaMapMarkerAlt } from 'react-icons/fa';
+import { getAssetUrl } from '../../utils/url';
 
 export const Footer: React.FC = () => {
   const { name, phone, email, address, social } = instituteData as any;
@@ -21,9 +22,13 @@ export const Footer: React.FC = () => {
           <div className="flex flex-col space-y-4">
             <Link to="/" className="flex items-center space-x-2">
               <img
-                src="/logo.png"
+                src={getAssetUrl('/logo.png')}
                 alt={`${name} Logo`}
                 className="h-12 w-12 object-contain"
+                onError={(e) => {
+                  // Fallback to a placeholder if the image fails to load
+                  (e.target as HTMLImageElement).src = 'https://via.placeholder.com/48';
+                }}
               />
               <span className="text-2xl font-bold text-red-600">{name}</span>
             </Link>
