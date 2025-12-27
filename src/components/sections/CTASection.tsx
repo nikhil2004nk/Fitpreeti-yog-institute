@@ -46,7 +46,7 @@ export const CTASection: React.FC<{ onBook: () => void }> = ({ onBook }) => {
             <Button
               variant="outline"
               size="lg"
-              href="https://wa.me/91XXXXXXXXXX?text=Hello%20FitPreeti%20Yog%20Institute,%20I%20would%20like%20to%20know%20more%20about%20your%20classes."
+              href="https://wa.me/917039142314?text=Hello%20FitPreeti%20Yog%20Institute,%20I%20would%20like%20to%20know%20more%20about%20your%20classes."
               target="_blank"
               rel="noopener noreferrer"
               className="border-white/70 text-white hover:bg-white/10"

@@ -100,7 +100,7 @@ export const OnlineClasses: React.FC = () => {
             </motion.p>
             <motion.div variants={fadeIn} className="flex flex-wrap gap-6 mt-8">
               <a
-                href="https://wa.me/919899999999"
+                href="https://wa.me/917039142314"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="group relative overflow-hidden px-8 py-3.5 text-base font-semibold bg-white text-red-600 hover:bg-gray-100 rounded-full transition-all duration-300 flex items-center justify-center"
@@ -271,7 +271,7 @@ export const OnlineClasses: React.FC = () => {
                 <span className="relative z-10 font-semibold">Book Your First Class</span>
                 <span className="absolute inset-0 translate-x-full bg-white/20 transition-transform duration-500 group-hover:translate-x-0"/>
               </button>
-              <a href="https://wa.me/919899999999" target="_blank" rel="noopener noreferrer" className="inline-flex items-center justify-center px-6 py-3 text-base font-medium border-2 border-white/70 text-white hover:bg-white/10 rounded-full transition-all duration-300">
+              <a href="https://wa.me/917039142314" target="_blank" rel="noopener noreferrer" className="inline-flex items-center justify-center px-6 py-3 text-base font-medium border-2 border-white/70 text-white hover:bg-white/10 rounded-full transition-all duration-300">
                 <MessageCircle className="w-5 h-5 mr-2"/> Chat on WhatsApp
               </a>
             </div>
