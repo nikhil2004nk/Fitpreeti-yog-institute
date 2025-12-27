@@ -4,15 +4,27 @@
     <meta charset="utf-8">
     <title>Redirecting...</title>
     <script>
-      // Get the current path and redirect to the React app with the correct base path
-      const path = window.location.pathname;
+      // Store the current URL before redirecting
       const base = '/Fitpreeti-yog-institute';
-      const newLocation = base + (path.startsWith(base) ? path.substring(base.length) : path);
-      window.location.href = newLocation + window.location.search + window.location.hash;
+      const path = window.location.pathname;
+      
+      // If the path doesn't start with the base, redirect to the base URL
+      if (!path.startsWith(base)) {
+        // Preserve query parameters and hash
+        const search = window.location.search;
+        const hash = window.location.hash;
+        const newLocation = base + path + search + hash;
+        
+        // Use replaceState to avoid adding to browser history
+        window.history.replaceState({}, '', newLocation);
+      }
+      
+      // Always redirect to index.html which will be handled by the SPA router
+      window.location.href = base + '/index.html';
     </script>
-    <meta http-equiv="refresh" content="0; URL=.">
+    <meta http-equiv="refresh" content="0; URL=./index.html">
   </head>
   <body>
-    <p>Redirecting to the app...</p>
+    <p>If you are not redirected automatically, <a href="./index.html">click here</a>.</p>
   </body>
 </html>

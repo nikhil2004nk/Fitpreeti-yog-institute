@@ -1,19 +1,27 @@
-import { defineConfig, loadEnv } from 'vite';
+import { defineConfig } from 'vite';
 import react from '@vitejs/plugin-react';
 
-// https://vitejs.dev/config/
 export default defineConfig(({ mode }) => {
-  // Load env file based on `mode` in the current directory.
-  const env = loadEnv(mode, process.cwd(), '');
+  // For GitHub Pages, use the repository name as base path in production
+  const base = mode === 'production' ? '/Fitpreeti-yog-institute/' : '/';
   
   return {
-    base: env.VITE_BASE_PATH || '/',
+    base,
     plugins: [react()],
     build: {
       outDir: 'dist',
+      chunkSizeWarningLimit: 1000,
+      rollupOptions: {
+        output: {
+          manualChunks: {
+            react: ['react', 'react-dom', 'react-router-dom'],
+          },
+        },
+      },
     },
+    // Define the base URL as a global constant
     define: {
-      'import.meta.env.BASE_URL': JSON.stringify(env.VITE_BASE_PATH || '/'),
+      'import.meta.env.BASE_URL': JSON.stringify(base),
     },
   };
 });
