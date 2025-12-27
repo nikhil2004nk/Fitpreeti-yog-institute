@@ -85,12 +85,12 @@ export const CorporateWellness: React.FC = () => {
             </motion.p>
 
             <motion.div variants={fadeIn} className="flex flex-wrap gap-6 mt-8">
-              <a
-                href="/booking?service=corporate"
+              <button
+                onClick={() => window.location.hash = '/booking?service=corporate'}
                 className="relative overflow-hidden px-8 py-3.5 text-base font-semibold bg-white text-red-600 hover:bg-gray-100 rounded-full transition-all duration-300 flex items-center justify-center"
               >
                 <span className="relative z-10">Request Corporate Program</span>
-              </a>
+              </button>
               <a
                 href={ROUTES.CONTACT}
                 className="px-8 py-3.5 text-base font-semibold border-2 border-white text-white hover:bg-white/10 transition-all duration-300 rounded-full flex items-center justify-center"
@@ -172,19 +172,19 @@ export const CorporateWellness: React.FC = () => {
             <h2 className="text-3xl md:text-4xl font-bold mb-6">Ready to Transform Your Workplace?</h2>
             <p className="mx-auto mb-10 text-lg text-red-100 max-w-2xl">Request a complimentary consultation to discuss how our corporate wellness programs can benefit your team.</p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
-              <a
-                href="/booking?service=corporate"
+              <button
+                onClick={() => window.location.hash = '/booking?service=corporate'}
                 className="group relative overflow-hidden px-8 py-4 text-lg font-semibold bg-red-600 hover:bg-red-700 text-white rounded-full transition-all duration-300 inline-flex items-center justify-center"
               >
                 <span className="relative z-10">Request Consultation</span>
                 <span className="absolute inset-0 w-full h-full bg-white/10 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
-              </a>
-              <a
-                href={ROUTES.CONTACT}
+              </button>
+              <button
+                onClick={() => window.location.hash = ROUTES.CONTACT}
                 className="px-8 py-4 text-lg font-semibold border-2 border-white/70 text-white hover:bg-white/10 transition-all duration-300 rounded-full inline-flex items-center justify-center"
               >
                 Contact Our Team
-              </a>
+              </button>
             </div>
           </motion.div>
         </div>

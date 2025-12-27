@@ -54,15 +54,15 @@ const ClassCard: React.FC<{ cls: ClassSchedule }> = ({ cls }) => {
         </span>
       </div>
       <div className="md:col-span-3 flex justify-end">
-        <a
-          href={`/booking?class=${encodeURIComponent(cls.name.toLowerCase().replace(/\s+/g, '-'))}`}
+        <button
+          onClick={() => window.location.hash = `/booking?class=${encodeURIComponent(cls.name.toLowerCase().replace(/\s+/g, '-'))}`}
           className="text-red-600 hover:text-red-700 font-medium text-sm flex items-center"
         >
           Join Now
           <svg className="w-4 h-4 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
           </svg>
-        </a>
+        </button>
       </div>
     </div>
   );
@@ -267,7 +267,10 @@ export const OnlineClasses: React.FC = () => {
             <h2 className="text-3xl md:text-4xl font-bold mb-6">Ready to Transform Your Practice?</h2>
             <p className="mx-auto mb-10 text-lg text-red-100 max-w-2xl">Join our online community and experience guided yoga & fitness at home.</p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
-              <button onClick={()=>window.location.href='/booking?mode=online'} className="group relative overflow-hidden px-8 py-3.5 text-base font-semibold text-white bg-red-600 hover:bg-red-700 rounded-full transition-all duration-300">
+              <button 
+                onClick={() => window.location.hash = '/booking?mode=online'} 
+                className="group relative overflow-hidden px-8 py-3.5 text-base font-semibold text-white bg-red-600 hover:bg-red-700 rounded-full transition-all duration-300"
+              >
                 <span className="relative z-10 font-semibold">Book Your First Class</span>
                 <span className="absolute inset-0 translate-x-full bg-white/20 transition-transform duration-500 group-hover:translate-x-0"/>
               </button>

@@ -37,7 +37,8 @@ const staggerContainer: Variants = {
 
 export const Services: React.FC = () => {
   const handleBook = (serviceId: string) => {
-    window.location.href = `/booking?service=${serviceId}`;
+    // Use hash-based routing for GitHub Pages compatibility
+    window.location.hash = `/booking?service=${serviceId}`;
   };
 
   const stats = [

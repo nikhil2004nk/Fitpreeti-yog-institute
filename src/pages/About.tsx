@@ -196,12 +196,12 @@ export const About: React.FC = () => {
             </motion.p>
 
             <motion.div variants={fadeIn} className="flex flex-col sm:flex-row gap-4 mt-12">
-              <a
-                href="/booking"
+              <button
+                onClick={() => window.location.hash = '/booking'}
                 className="inline-flex items-center justify-center px-8 py-4 text-lg font-semibold text-white bg-red-600 rounded-full hover:bg-red-700 transition-colors duration-300"
               >
                 Start Your Journey Today
-              </a>
+              </button>
               <button
                 onClick={() => {
                   const element = document.getElementById('our-story');
@@ -692,7 +692,7 @@ export const About: React.FC = () => {
             <div className="flex flex-col items-center justify-center gap-4 sm:flex-row">
               <Button
                 size="lg"
-                onClick={() => (window.location.href = '/booking')}
+                onClick={() => window.location.hash = '/booking'}
                 className="group relative overflow-hidden bg-white px-8 text-red-700 hover:bg-red-50"
               >
                 <span className="relative z-10 font-semibold">

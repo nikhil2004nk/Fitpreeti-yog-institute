@@ -233,7 +233,7 @@ export const Contact: React.FC = () => {
                 <p className="text-gray-600 text-sm">
                   Have questions about our classes or want to partner with us? Send us a message!
                   <br />
-                  <span className="text-xs">For class bookings, please use our <a href="/booking" className="text-red-600 hover:underline">booking form</a>.</span>
+                  <span className="text-xs">For class bookings, please use our <button onClick={() => window.location.hash = '/booking'} className="text-red-600 hover:underline">booking form</button>.</span>
                 </p>
               </div>
 
@@ -336,7 +336,7 @@ export const Contact: React.FC = () => {
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
               <Button
                 size="lg"
-                onClick={() => (window.location.href = '/booking')}
+                onClick={() => window.location.hash = '/booking'}
                 className="group relative overflow-hidden bg-white px-8 text-red-700 hover:bg-red-50"
               >
                 <span className="relative z-10 font-semibold">
