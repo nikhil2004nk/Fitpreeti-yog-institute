@@ -2,6 +2,7 @@ import { motion, type Variants } from 'framer-motion';
 import { Navbar } from '../components/layout/Navbar';
 import { Footer } from '../components/layout/Footer';
 import { ROUTES } from '../constants/routes';
+import { navigateTo } from '../utils/navigation';
 import { Users, Clock, Award, Heart, Briefcase, Calendar, Target, Users as Team, Zap, Shield, MessageCircle } from 'lucide-react';
 
 const fadeIn: Variants = {
@@ -86,17 +87,17 @@ export const CorporateWellness: React.FC = () => {
 
             <motion.div variants={fadeIn} className="flex flex-wrap gap-6 mt-8">
               <button
-                onClick={() => window.location.hash = '/booking?service=corporate'}
+                onClick={() => navigateTo('/booking?service=corporate')}
                 className="relative overflow-hidden px-8 py-3.5 text-base font-semibold bg-white text-red-600 hover:bg-gray-100 rounded-full transition-all duration-300 flex items-center justify-center"
               >
                 <span className="relative z-10">Request Corporate Program</span>
               </button>
-              <a
-                href={ROUTES.CONTACT}
+              <button
+                onClick={() => navigateTo(ROUTES.CONTACT)}
                 className="px-8 py-3.5 text-base font-semibold border-2 border-white text-white hover:bg-white/10 transition-all duration-300 rounded-full flex items-center justify-center"
               >
                 Contact Us
-              </a>
+              </button>
             </motion.div>
           </motion.div>
 

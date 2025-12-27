@@ -54,7 +54,14 @@ export const HeroSection: React.FC<HeroProps> = ({ onBookNow }) => {
             <Button
               variant="outline"
               size="lg"
-              onClick={() => window.location.hash = '/services'}
+              onClick={() => {
+                // For GitHub Pages, we need to handle both direct navigation and SPA routing
+                if (window.location.hostname.includes('github.io')) {
+                  window.location.href = '/Fitpreeti-yog-institute/#/services';
+                } else {
+                  window.location.hash = '/services';
+                }
+              }}
               className="border-2 border-white text-white hover:bg-white/10 transition-all duration-300"
             >
               Explore Classes
