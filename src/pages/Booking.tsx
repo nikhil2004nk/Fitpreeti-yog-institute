@@ -5,7 +5,7 @@ import { Footer } from '../components/layout/Footer';  // ✅ FIXED: Added impor
 import { Button } from '../components/ui/Button';
 import { Modal } from '../components/ui/Modal';
 import { useBookingForm } from '../hooks/useBookingForm';
-import services from '../data/services.json';
+import services from '../data/services';
 
 export const Booking: React.FC = () => {
   const [selectedService, setSelectedService] = useState<Service | null>(null);
@@ -86,6 +86,10 @@ export const Booking: React.FC = () => {
                       src={service.image} 
                       alt={service.name}
                       className="w-full h-32 object-cover rounded-2xl mb-4 group-hover:scale-105 transition-transform"
+                      onError={(e) => {
+                        // Fallback to a placeholder if the image fails to load
+                        (e.target as HTMLImageElement).src = 'https://via.placeholder.com/300x128';
+                      }}
                     />
                     <h3 className="font-bold text-xl mb-2">{service.name}</h3>
                     <div className="flex items-center justify-between">
