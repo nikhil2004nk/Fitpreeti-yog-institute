@@ -36,6 +36,7 @@ jobs:
 
       - name: Build
         run: |
+          echo "VITE_BASE_PATH=/Fitpreeti-yog-institute/" >> .env
           npm run build
         env:
           NODE_ENV: production
