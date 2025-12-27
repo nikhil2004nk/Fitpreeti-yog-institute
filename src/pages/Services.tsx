@@ -155,7 +155,7 @@ export const Services: React.FC = () => {
                 <Button
                   variant="accent"
                   size="lg"
-                  onClick={() => (window.location.href = '/booking')}
+                  onClick={() => (window.location.hash = '/booking')}
                   className="group"
                 >
                   <Zap className="w-5 h-5 mr-2 group-hover:animate-pulse" />

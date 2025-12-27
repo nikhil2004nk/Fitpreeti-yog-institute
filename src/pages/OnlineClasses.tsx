@@ -107,12 +107,17 @@ export const OnlineClasses: React.FC = () => {
               >
                 <span className="relative z-10">Join Live Class</span>
               </a>
-              <a
-                href="#schedule"
+              <button
+                onClick={() => {
+                  const scheduleSection = document.getElementById('schedule');
+                  if (scheduleSection) {
+                    scheduleSection.scrollIntoView({ behavior: 'smooth' });
+                  }
+                }}
                 className="px-8 py-3.5 text-base font-semibold border-2 border-white text-white hover:bg-white/10 transition-all duration-300 rounded-full flex items-center justify-center"
               >
                 View Schedule
-              </a>
+              </button>
             </motion.div>
           </motion.div>
 
@@ -268,7 +273,7 @@ export const OnlineClasses: React.FC = () => {
             <p className="mx-auto mb-10 text-lg text-red-100 max-w-2xl">Join our online community and experience guided yoga & fitness at home.</p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
               <button 
-                onClick={() => window.location.hash = '/booking?mode=online'} 
+                onClick={() => window.location.hash = '/booking'} 
                 className="group relative overflow-hidden px-8 py-3.5 text-base font-semibold text-white bg-red-600 hover:bg-red-700 rounded-full transition-all duration-300"
               >
                 <span className="relative z-10 font-semibold">Book Your First Class</span>

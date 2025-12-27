@@ -23,10 +23,21 @@ export const Booking: React.FC = () => {
     const urlParams = new URLSearchParams(window.location.search);
     const serviceId = urlParams.get('service');
     if (serviceId) {
-      const service = (services as Service[]).find(s => s.id === serviceId); // ✅ FIXED: type assertion
-      if (service) setSelectedService(service);
+      const service = (services as Service[]).find(s => s.id === serviceId);
+      if (service) {
+        setSelectedService(service);
+        // Update form data with the selected service
+        handleChange('serviceId', service.id);
+        // Scroll to form after a short delay to ensure the DOM is updated
+        setTimeout(() => {
+          const formElement = document.getElementById('booking-form');
+          if (formElement) {
+            formElement.scrollIntoView({ behavior: 'smooth', block: 'start' });
+          }
+        }, 100);
+      }
     }
-  }, []);
+  }, [handleChange]); // Add handleChange to dependency array
 
   const onSubmit = async () => {
     if (!selectedService || !selectedDate || !selectedTime) return;

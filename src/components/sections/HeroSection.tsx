@@ -54,7 +54,7 @@ export const HeroSection: React.FC<HeroProps> = ({ onBookNow }) => {
             <Button
               variant="outline"
               size="lg"
-              href="/services"
+              onClick={() => window.location.hash = '/services'}
               className="border-2 border-white text-white hover:bg-white/10 transition-all duration-300"
             >
               Explore Classes
