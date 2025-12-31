@@ -1,10 +1,16 @@
 // src/components/layout/Navbar.tsx
 import { useState, useEffect } from 'react';
-import { NavLink, Link, useNavigate } from 'react-router-dom';
-import { Menu, X, LogOut, User } from 'lucide-react';
+import { Link, useNavigate } from 'react-router-dom';
+import { Menu, X } from 'lucide-react';
 import { ROUTES } from '../../constants/routes';
 import { getAssetUrl } from '../../utils/url';
 import { useAuth } from '../../contexts/AuthContext';
+import { PublicNavItems } from '../navbar/PublicNavItems';
+import { AdminNavItems } from '../navbar/AdminNavItems';
+import { TrainerNavItems } from '../navbar/TrainerNavItems';
+import { UserMenu } from '../navbar/UserMenu';
+import { MobileNavItems } from '../navbar/MobileNavItems';
+import { BookNowButton } from '../navbar/BookNowButton';
 
 export const Navbar: React.FC = () => {
   const [isOpen, setIsOpen] = useState(false);
@@ -26,30 +32,6 @@ export const Navbar: React.FC = () => {
     return () => window.removeEventListener('scroll', handleScroll);
   }, [isOpen]);
 
-  const navLinkBase = 'relative py-3 px-3 text-lg font-semibold transition-all duration-300 group';
-
-  const getNavClass = ({ isActive, isPrimary, isScrolled }: { isActive: boolean; isPrimary?: boolean; isScrolled: boolean }) =>
-    `${navLinkBase} ${
-      isPrimary 
-        ? 'bg-red-600 text-white hover:bg-red-700 px-6 py-2 rounded-full hover:shadow-lg hover:-translate-y-0.5 transition-transform'
-        : isActive 
-          ? isScrolled
-            ? 'text-red-600 font-semibold relative after:absolute after:bottom-1 after:left-1/2 after:-translate-x-1/2 after:w-6 after:h-0.5 after:bg-red-600 after:rounded-full'
-            : 'text-red-400 font-semibold relative after:absolute after:bottom-1 after:left-1/2 after:-translate-x-1/2 after:w-6 after:h-0.5 after:bg-red-400 after:rounded-full'
-          : isScrolled
-            ? 'text-gray-700 hover:text-red-600 hover:after:absolute hover:after:bottom-1 hover:after:left-1/2 hover:after:-translate-x-1/2 hover:after:w-3 hover:after:h-0.5 hover:after:bg-gray-400 hover:after:rounded-full'
-            : 'text-white hover:text-red-400 hover:after:absolute hover:after:bottom-1 hover:after:left-1/2 hover:after:-translate-x-1/2 hover:after:w-3 hover:after:h-0.5 hover:after:bg-red-400 hover:after:rounded-full'
-    }`;
-
-  const navItems = [
-    { to: ROUTES.HOME, label: 'Home', end: true },
-    { to: ROUTES.SERVICES, label: 'Services' },
-    { to: ROUTES.ONLINE, label: 'Online Studio' },
-    { to: ROUTES.CORPORATE, label: 'Corporate' },
-    { to: ROUTES.ABOUT, label: 'About' },
-    { to: ROUTES.CONTACT, label: 'Contact' },
-  ];
-
   const handleNavClick = (to: string) => {
     navigate(to);
     setIsOpen(false);
@@ -69,6 +51,21 @@ export const Navbar: React.FC = () => {
       console.error('Logout error:', error);
     } finally {
       setIsLoggingOut(false);
+    }
+  };
+
+  // Get role-specific navigation items (Admin and Trainer only)
+  const renderRoleNavItems = () => {
+    if (!isAuthenticated || !user) return null;
+
+    switch (user.role) {
+      case 'admin':
+        return <AdminNavItems isScrolled={isScrolled} />;
+      case 'trainer':
+        return <TrainerNavItems isScrolled={isScrolled} />;
+      case 'customer':
+      default:
+        return null; // Customers don't have role-specific nav items, they use Book Now button
     }
   };
 
@@ -111,140 +108,40 @@ export const Navbar: React.FC = () => {
 
           {/* Desktop Nav */}
           <ul className="hidden lg:flex items-center space-x-4 xl:space-x-8">
-            {navItems.map((item) => (
-              <li key={item.to}>
-                <NavLink 
-                  to={item.to} 
-                  end={item.end}
-                  className={({ isActive }) => 
-                    getNavClass({ 
-                      isActive, 
-                      isPrimary: item.label === 'Book Now',
-                      isScrolled
-                    })
-                  }
-                  onClick={() => {
-                    window.scrollTo({
-                      top: 0,
-                      behavior: 'smooth'
-                    });
-                  }}
-                >
-                  {item.label}
-                </NavLink>
-              </li>
-            ))}
-            <li>
-              <NavLink
-                to={ROUTES.BOOKING}
-                className="ml-4 px-3 xl:px-4 py-2 xl:py-2.5 bg-red-600 text-white font-bold text-xs xl:text-sm
-                           hover:bg-red-700 hover:text-white hover:shadow-2xl hover:scale-105 transition-all duration-300
-                           rounded-tl-[18px] rounded-tr-[12px] rounded-bl-[12px] rounded-br-[18px]
-                           leading-tight flex flex-col items-center justify-center min-w-[60px] xl:min-w-[70px]"
-              >
-                <span className="block">Book</span>
-                <span className="block">Now</span>
-              </NavLink>
-            </li>
-            {isAuthenticated ? (
-              <li className="ml-4 flex items-center space-x-3">
-                <NavLink
-                  to={ROUTES.DASHBOARD}
-                  className={`text-sm hidden xl:block font-semibold hover:underline transition-all ${
-                    isScrolled ? 'text-gray-700 hover:text-red-600' : 'text-white hover:text-red-400'
-                  }`}
-                >
-                  Dashboard
-                </NavLink>
-                <span className={`text-sm hidden xl:block ${isScrolled ? 'text-gray-700' : 'text-white'}`}>
-                  {user?.name}
-                </span>
-                <button
-                  onClick={handleLogout}
-                  disabled={isLoggingOut}
-                  className="px-4 xl:px-6 py-2 xl:py-3 bg-gray-600 text-white font-semibold rounded-xl text-sm xl:text-base
-                             hover:bg-gray-700 hover:shadow-lg transition-all duration-300 disabled:opacity-50 flex items-center space-x-2"
-                >
-                  <LogOut className="h-4 w-4" />
-                  <span>Logout</span>
-                </button>
-              </li>
-            ) : (
-              <li className="ml-4">
-                <NavLink
-                  to={ROUTES.LOGIN}
-                  className="px-4 xl:px-6 py-2 xl:py-3 bg-gray-600 text-white font-semibold rounded-xl text-sm xl:text-base
-                             hover:bg-gray-700 hover:shadow-lg transition-all duration-300 flex items-center space-x-2"
-                >
-                  <User className="h-4 w-4" />
-                  <span>Login</span>
-                </NavLink>
-              </li>
+            <PublicNavItems isScrolled={isScrolled} />
+            {/* Show Book Now only for customers and non-authenticated users */}
+            {(!isAuthenticated || user?.role === 'customer') && (
+              <BookNowButton variant="desktop" />
             )}
+            {/* Role-specific navigation items (Admin/Trainer only) */}
+            {isAuthenticated && user?.role !== 'customer' && renderRoleNavItems()}
+            {/* User menu (Dashboard link, user name, logout button) */}
+            <UserMenu
+              user={user}
+              isScrolled={isScrolled}
+              isAuthenticated={isAuthenticated}
+              onLogout={handleLogout}
+              isLoggingOut={isLoggingOut}
+            />
           </ul>
 
           {/* Tablet Nav (hidden on mobile and desktop) */}
           <ul className="hidden md:flex lg:hidden items-center space-x-2">
-            {navItems.slice(0, 3).map((item) => (
-              <li key={item.to}>
-                <NavLink 
-                  to={item.to} 
-                  end={item.end}
-                  className={({ isActive }) => 
-                    `relative py-2 px-2 text-sm font-semibold transition-all duration-300 ${
-                      isActive 
-                        ? isScrolled
-                          ? 'text-red-600 font-semibold relative after:absolute after:bottom-0 after:left-1/2 after:-translate-x-1/2 after:w-6 after:h-0.5 after:bg-red-600 after:rounded-full'
-                          : 'text-red-400 font-semibold relative after:absolute after:bottom-0 after:left-1/2 after:-translate-x-1/2 after:w-6 after:h-0.5 after:bg-red-400 after:rounded-full'
-                        : isScrolled
-                          ? 'text-gray-700 hover:text-red-600'
-                          : 'text-white hover:text-red-400'
-                    }`
-                  }
-                  onClick={() => {
-                    window.scrollTo({
-                      top: 0,
-                      behavior: 'smooth'
-                    });
-                  }}
-                >
-                  {item.label}
-                </NavLink>
-              </li>
-            ))}
-            <li>
-              <NavLink
-                to={ROUTES.BOOKING}
-                className="ml-2 px-4 py-2 bg-red-600 text-white font-semibold rounded-xl text-sm
-                           hover:bg-red-700 hover:shadow-lg transition-all duration-300"
-              >
-                Book Now
-              </NavLink>
-            </li>
-            {isAuthenticated ? (
-              <li className="ml-2">
-                <button
-                  onClick={handleLogout}
-                  disabled={isLoggingOut}
-                  className="px-4 py-2 bg-gray-600 text-white font-semibold rounded-xl text-sm
-                             hover:bg-gray-700 hover:shadow-lg transition-all duration-300 disabled:opacity-50 flex items-center space-x-2"
-                >
-                  <LogOut className="h-4 w-4" />
-                  <span>Logout</span>
-                </button>
-              </li>
-            ) : (
-              <li className="ml-2">
-                <NavLink
-                  to={ROUTES.LOGIN}
-                  className="px-4 py-2 bg-gray-600 text-white font-semibold rounded-xl text-sm
-                             hover:bg-gray-700 hover:shadow-lg transition-all duration-300 flex items-center space-x-2"
-                >
-                  <User className="h-4 w-4" />
-                  <span>Login</span>
-                </NavLink>
-              </li>
+            <PublicNavItems isScrolled={isScrolled} />
+            {/* Show Book Now only for customers and non-authenticated users */}
+            {(!isAuthenticated || user?.role === 'customer') && (
+              <BookNowButton variant="tablet" />
             )}
+            {/* Role-specific navigation items (Admin/Trainer only) */}
+            {isAuthenticated && user?.role !== 'customer' && renderRoleNavItems()}
+            {/* User menu */}
+            <UserMenu
+              user={user}
+              isScrolled={isScrolled}
+              isAuthenticated={isAuthenticated}
+              onLogout={handleLogout}
+              isLoggingOut={isLoggingOut}
+            />
           </ul>
 
           {/* Mobile menu button */}
@@ -286,70 +183,13 @@ export const Navbar: React.FC = () => {
             style={{ zIndex: 95 }}
           >
             <ul className="flex flex-col py-2">
-              {navItems.map((item) => (
-                <li key={item.to} className="border-b border-gray-100 last:border-0">
-                  <NavLink
-                    to={item.to}
-                    end={item.end}
-                    onClick={() => handleNavClick(item.to)}
-                    className={({ isActive }) =>
-                      `block py-4 px-6 font-medium transition-colors text-base ${
-                        isActive 
-                          ? 'text-red-600 bg-red-50 font-semibold' 
-                          : 'text-gray-800 hover:bg-gray-50 hover:text-red-600'
-                      }`
-                    }
-                  >
-                    {item.label}
-                  </NavLink>
-                </li>
-              ))}
-              <li className="mt-2 px-4 pb-4 space-y-2">
-                <NavLink
-                  to={ROUTES.BOOKING}
-                  onClick={() => handleNavClick(ROUTES.BOOKING)}
-                  className="block py-3 px-6 bg-red-600 text-white font-semibold rounded-xl text-center 
-                             hover:bg-red-700 hover:shadow-lg transition-all duration-300"
-                >
-                  Book Now
-                </NavLink>
-                {isAuthenticated ? (
-                  <>
-                    <NavLink
-                      to={ROUTES.DASHBOARD}
-                      onClick={() => handleNavClick(ROUTES.DASHBOARD)}
-                      className="block py-3 px-6 bg-purple-600 text-white font-semibold rounded-xl text-center 
-                                 hover:bg-purple-700 hover:shadow-lg transition-all duration-300 mb-2"
-                    >
-                      Dashboard
-                    </NavLink>
-                    {user?.name && (
-                      <div className="py-2 px-6 text-sm text-gray-700 text-center">
-                        {user.name}
-                      </div>
-                    )}
-                    <button
-                      onClick={handleLogout}
-                      disabled={isLoggingOut}
-                      className="w-full py-3 px-6 bg-gray-600 text-white font-semibold rounded-xl text-center 
-                                 hover:bg-gray-700 hover:shadow-lg transition-all duration-300 disabled:opacity-50 flex items-center justify-center space-x-2"
-                    >
-                      <LogOut className="h-4 w-4" />
-                      <span>Logout</span>
-                    </button>
-                  </>
-                ) : (
-                  <NavLink
-                    to={ROUTES.LOGIN}
-                    onClick={() => handleNavClick(ROUTES.LOGIN)}
-                    className="block py-3 px-6 bg-gray-600 text-white font-semibold rounded-xl text-center 
-                               hover:bg-gray-700 hover:shadow-lg transition-all duration-300 flex items-center justify-center space-x-2"
-                  >
-                    <User className="h-4 w-4" />
-                    <span>Login</span>
-                  </NavLink>
-                )}
-              </li>
+              <MobileNavItems
+                isAuthenticated={isAuthenticated}
+                user={user}
+                onNavClick={handleNavClick}
+                onLogout={handleLogout}
+                isLoggingOut={isLoggingOut}
+              />
             </ul>
           </div>
         </div>

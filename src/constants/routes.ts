@@ -8,5 +8,12 @@ export const ROUTES = {
   ONLINE: '/online-classes',
   LOGIN: '/login',
   REGISTER: '/register',
-  DASHBOARD: '/dashboard'
+  DASHBOARD: '/dashboard',
+  // Admin Management Routes
+  ADMIN_USERS: '/admin/users',
+  ADMIN_TRAINERS: '/admin/trainers',
+  ADMIN_SERVICES: '/admin/services',
+  ADMIN_REVIEWS: '/admin/reviews',
+  ADMIN_CLASS_SCHEDULES: '/admin/class-schedules',
+  ADMIN_BOOKINGS: '/admin/bookings'
 } as const;

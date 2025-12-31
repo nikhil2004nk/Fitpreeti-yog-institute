@@ -42,7 +42,11 @@ export interface User {
   email?: string;
   phone: string;
   role: 'customer' | 'admin' | 'trainer';
+  profile_image?: string | null;
+  is_active?: boolean;
+  last_login?: string | null;
   created_at?: string;
+  updated_at?: string;
 }
 
 export interface RegisterData {

@@ -1,10 +1,79 @@
+import { useState, useEffect } from 'react';
 import { Navbar } from '../../components/layout/Navbar';
 import { Footer } from '../../components/layout/Footer';
 import { useAuth } from '../../contexts/AuthContext';
+import { classScheduleService, type ClassSchedule } from '../../services/classSchedule';
+import { bookingService, type Booking } from '../../services/bookings';
 import { Calendar, Users, Clock, TrendingUp, User, Phone, Mail } from 'lucide-react';
 
 export const TrainerDashboard: React.FC = () => {
   const { user } = useAuth();
+  const [schedules, setSchedules] = useState<ClassSchedule[]>([]);
+  const [bookings, setBookings] = useState<Booking[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string>('');
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        setLoading(true);
+        // Note: In a real app, you'd filter by trainer_id from user.id
+        // For now, we'll get all schedules and filter client-side
+        const [schedulesData, bookingsData] = await Promise.all([
+          classScheduleService.getAllSchedules(),
+          bookingService.getAllBookings().catch(() => []) // May not have access
+        ]);
+        
+        // Filter schedules for this trainer (if trainer_id matches user.id)
+        // For now, show all schedules
+        setSchedules(schedulesData);
+        setBookings(bookingsData);
+      } catch (err: any) {
+        setError(err?.message || 'Failed to load data');
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchData();
+  }, []);
+
+  const today = new Date().toISOString().split('T')[0];
+  const todaySchedules = schedules.filter(s => {
+    const scheduleDate = new Date(s.start_time).toISOString().split('T')[0];
+    return scheduleDate === today && s.status === 'scheduled';
+  });
+
+  const upcomingSchedules = schedules.filter(s => {
+    const scheduleDate = new Date(s.start_time);
+    return scheduleDate >= new Date() && s.status === 'scheduled';
+  });
+
+  const totalStudents = new Set(bookings.map(b => b.user_id)).size;
+  const totalClasses = schedules.length;
+
+  const formatDateTime = (dateTime: string) => {
+    const date = new Date(dateTime);
+    return {
+      date: date.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }),
+      time: date.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' })
+    };
+  };
+
+  const getStatusColor = (status: string) => {
+    switch (status) {
+      case 'scheduled':
+        return 'bg-blue-100 text-blue-700';
+      case 'in_progress':
+        return 'bg-yellow-100 text-yellow-700';
+      case 'completed':
+        return 'bg-green-100 text-green-700';
+      case 'cancelled':
+        return 'bg-red-100 text-red-700';
+      default:
+        return 'bg-gray-100 text-gray-700';
+    }
+  };
 
   return (
     <>
@@ -23,7 +92,7 @@ export const TrainerDashboard: React.FC = () => {
               <div className="flex items-center justify-between">
                 <div>
                   <p className="text-gray-600 text-sm font-medium">Today's Classes</p>
-                  <p className="text-3xl font-bold text-gray-900 mt-2">0</p>
+                  <p className="text-3xl font-bold text-gray-900 mt-2">{todaySchedules.length}</p>
                 </div>
                 <Calendar className="h-12 w-12 text-red-600 opacity-20" />
               </div>
@@ -33,7 +102,7 @@ export const TrainerDashboard: React.FC = () => {
               <div className="flex items-center justify-between">
                 <div>
                   <p className="text-gray-600 text-sm font-medium">Total Students</p>
-                  <p className="text-3xl font-bold text-gray-900 mt-2">0</p>
+                  <p className="text-3xl font-bold text-gray-900 mt-2">{totalStudents}</p>
                 </div>
                 <Users className="h-12 w-12 text-blue-600 opacity-20" />
               </div>
@@ -43,7 +112,7 @@ export const TrainerDashboard: React.FC = () => {
               <div className="flex items-center justify-between">
                 <div>
                   <p className="text-gray-600 text-sm font-medium">Upcoming Sessions</p>
-                  <p className="text-3xl font-bold text-gray-900 mt-2">0</p>
+                  <p className="text-3xl font-bold text-gray-900 mt-2">{upcomingSchedules.length}</p>
                 </div>
                 <Clock className="h-12 w-12 text-green-600 opacity-20" />
               </div>
@@ -53,7 +122,7 @@ export const TrainerDashboard: React.FC = () => {
               <div className="flex items-center justify-between">
                 <div>
                   <p className="text-gray-600 text-sm font-medium">Total Classes</p>
-                  <p className="text-3xl font-bold text-gray-900 mt-2">0</p>
+                  <p className="text-3xl font-bold text-gray-900 mt-2">{totalClasses}</p>
                 </div>
                 <TrendingUp className="h-12 w-12 text-purple-600 opacity-20" />
               </div>
@@ -110,40 +179,97 @@ export const TrainerDashboard: React.FC = () => {
 
             {/* Main Content */}
             <div className="lg:col-span-2 space-y-6">
-              {/* Quick Actions */}
-              <div className="bg-white rounded-xl shadow-lg p-6">
-                <h2 className="text-xl font-bold text-gray-900 mb-4">Quick Actions</h2>
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                  <button className="flex items-center space-x-4 p-4 border-2 border-gray-200 rounded-xl hover:border-purple-600 hover:bg-purple-50 transition-all group">
-                    <div className="bg-purple-600 text-white p-3 rounded-lg group-hover:scale-110 transition-transform">
-                      <Calendar className="h-6 w-6" />
-                    </div>
-                    <div>
-                      <p className="font-semibold text-gray-900">Manage Schedule</p>
-                      <p className="text-sm text-gray-600">View and edit classes</p>
-                    </div>
-                  </button>
-
-                  <button className="flex items-center space-x-4 p-4 border-2 border-gray-200 rounded-xl hover:border-purple-600 hover:bg-purple-50 transition-all group">
-                    <div className="bg-blue-600 text-white p-3 rounded-lg group-hover:scale-110 transition-transform">
-                      <Users className="h-6 w-6" />
-                    </div>
-                    <div>
-                      <p className="font-semibold text-gray-900">View Students</p>
-                      <p className="text-sm text-gray-600">Manage your students</p>
-                    </div>
-                  </button>
-                </div>
-              </div>
-
               {/* Today's Schedule */}
               <div className="bg-white rounded-xl shadow-lg p-6">
                 <h2 className="text-xl font-bold text-gray-900 mb-4">Today's Schedule</h2>
-                <div className="text-center py-12">
-                  <Calendar className="h-16 w-16 text-gray-400 mx-auto mb-4" />
-                  <p className="text-gray-600">No classes scheduled for today</p>
-                </div>
+                {loading ? (
+                  <div className="text-center py-12">
+                    <div className="inline-block animate-spin rounded-full h-8 w-8 border-b-2 border-purple-600"></div>
+                    <p className="mt-4 text-gray-600">Loading schedule...</p>
+                  </div>
+                ) : error ? (
+                  <div className="text-center py-12">
+                    <p className="text-red-600">{error}</p>
+                  </div>
+                ) : todaySchedules.length === 0 ? (
+                  <div className="text-center py-12">
+                    <Calendar className="h-16 w-16 text-gray-400 mx-auto mb-4" />
+                    <p className="text-gray-600">No classes scheduled for today</p>
+                  </div>
+                ) : (
+                  <div className="space-y-4">
+                    {todaySchedules.map((schedule) => {
+                      const { date, time } = formatDateTime(schedule.start_time);
+                      const endTime = new Date(schedule.end_time).toLocaleTimeString('en-US', {
+                        hour: '2-digit',
+                        minute: '2-digit'
+                      });
+                      return (
+                        <div
+                          key={schedule.id}
+                          className="border border-gray-200 rounded-lg p-4 hover:shadow-md transition-shadow"
+                        >
+                          <div className="flex items-start justify-between">
+                            <div className="flex-1">
+                              <div className="flex items-center space-x-3 mb-2">
+                                <h3 className="font-semibold text-gray-900">{schedule.title}</h3>
+                                <span className={`px-2 py-1 rounded-full text-xs font-medium ${getStatusColor(schedule.status)}`}>
+                                  {schedule.status}
+                                </span>
+                              </div>
+                              {schedule.description && (
+                                <p className="text-sm text-gray-600 mb-2">{schedule.description}</p>
+                              )}
+                              <div className="space-y-1 text-sm text-gray-600">
+                                <p className="flex items-center space-x-2">
+                                  <Clock className="h-4 w-4" />
+                                  <span>{time} - {endTime}</span>
+                                </p>
+                                <p className="flex items-center space-x-2">
+                                  <Users className="h-4 w-4" />
+                                  <span>
+                                    {schedule.current_participants} / {schedule.max_participants} participants
+                                  </span>
+                                </p>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      );
+                    })}
+                  </div>
+                )}
               </div>
+
+              {/* Upcoming Classes */}
+              {upcomingSchedules.length > todaySchedules.length && (
+                <div className="bg-white rounded-xl shadow-lg p-6">
+                  <h2 className="text-xl font-bold text-gray-900 mb-4">Upcoming Classes</h2>
+                  <div className="space-y-4">
+                    {upcomingSchedules.slice(0, 3).map((schedule) => {
+                      const { date, time } = formatDateTime(schedule.start_time);
+                      return (
+                        <div
+                          key={schedule.id}
+                          className="border border-gray-200 rounded-lg p-4 hover:shadow-md transition-shadow"
+                        >
+                          <div className="flex items-start justify-between">
+                            <div className="flex-1">
+                              <h3 className="font-semibold text-gray-900 mb-1">{schedule.title}</h3>
+                              <p className="text-sm text-gray-600">
+                                {date} at {time}
+                              </p>
+                              <span className={`inline-block mt-2 px-2 py-1 rounded-full text-xs font-medium ${getStatusColor(schedule.status)}`}>
+                                {schedule.status}
+                              </span>
+                            </div>
+                          </div>
+                        </div>
+                      );
+                    })}
+                  </div>
+                </div>
+              )}
             </div>
           </div>
         </div>
@@ -152,4 +278,3 @@ export const TrainerDashboard: React.FC = () => {
     </>
   );
 };
-

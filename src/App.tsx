@@ -10,6 +10,13 @@ import { Login } from './pages/Login';
 import { Register } from './pages/Register';
 import { Dashboard } from './pages/Dashboard';
 import { ProtectedRoute } from './components/auth/ProtectedRoute';
+// Admin Management Pages
+import { UserManagement } from './pages/admin/UserManagement';
+import { TrainerManagement } from './pages/admin/TrainerManagement';
+import { ServiceManagement } from './pages/admin/ServiceManagement';
+import { ReviewManagement } from './pages/admin/ReviewManagement';
+import { ClassScheduleManagement } from './pages/admin/ClassScheduleManagement';
+import { BookingManagement } from './pages/admin/BookingManagement';
 
 const App: React.FC = () => {
   return (
@@ -28,6 +35,55 @@ const App: React.FC = () => {
         element={
           <ProtectedRoute>
             <Dashboard />
+          </ProtectedRoute>
+        } 
+      />
+      {/* Admin Management Routes */}
+      <Route 
+        path="/admin/users" 
+        element={
+          <ProtectedRoute requiredRole="admin">
+            <UserManagement />
+          </ProtectedRoute>
+        } 
+      />
+      <Route 
+        path="/admin/trainers" 
+        element={
+          <ProtectedRoute requiredRole="admin">
+            <TrainerManagement />
+          </ProtectedRoute>
+        } 
+      />
+      <Route 
+        path="/admin/services" 
+        element={
+          <ProtectedRoute requiredRole="admin">
+            <ServiceManagement />
+          </ProtectedRoute>
+        } 
+      />
+      <Route 
+        path="/admin/reviews" 
+        element={
+          <ProtectedRoute requiredRole="admin">
+            <ReviewManagement />
+          </ProtectedRoute>
+        } 
+      />
+      <Route 
+        path="/admin/class-schedules" 
+        element={
+          <ProtectedRoute requiredRole="admin">
+            <ClassScheduleManagement />
+          </ProtectedRoute>
+        } 
+      />
+      <Route 
+        path="/admin/bookings" 
+        element={
+          <ProtectedRoute requiredRole="admin">
+            <BookingManagement />
           </ProtectedRoute>
         } 
       />
