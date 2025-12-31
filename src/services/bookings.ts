@@ -55,11 +55,15 @@ class BookingService {
     return response.data || response as unknown as Booking;
   }
 
-  async getAvailableSlots(serviceId: string, date: string): Promise<string[]> {
-    const response = await apiRequestWithRefresh<string[]>(`/bookings/available/${serviceId}/${date}`, {
+  async getAvailableSlots(serviceId: string, date: string): Promise<{ available_slots: string[]; booked_slots: string[] }> {
+    const response = await apiRequestWithRefresh<{ available_slots: string[]; booked_slots: string[] }>(`/bookings/available/${serviceId}/${date}`, {
       method: 'GET',
     });
-    return Array.isArray(response.data) ? response.data : (Array.isArray(response) ? response : []);
+    if (response.data && typeof response.data === 'object' && 'available_slots' in response.data) {
+      return response.data;
+    }
+    // Fallback for different response formats
+    return { available_slots: [], booked_slots: [] };
   }
 
   async getAllBookings(): Promise<Booking[]> {

@@ -1,6 +1,7 @@
 import { motion } from 'framer-motion';
+import { useState, useEffect } from 'react';
 import { Button } from '../ui/Button';
-import services from '../../data/services';
+import { serviceService, type Service } from '../../services/services';
 import type { ReactNode } from 'react';
 
 import { Dumbbell, Music, Flame, Leaf } from 'lucide-react';
@@ -19,6 +20,21 @@ const serviceIcons: Record<string, ReactNode> = {
 
 
 export const HeroSection: React.FC<HeroProps> = ({ onBookNow }) => {
+  const [services, setServices] = useState<Service[]>([]);
+
+  useEffect(() => {
+    const fetchServices = async () => {
+      try {
+        const data = await serviceService.getAllServices();
+        // Filter only active services and take first 4
+        setServices(data.filter(s => s.is_active).slice(0, 4));
+      } catch (err) {
+        console.error('Failed to load services:', err);
+      }
+    };
+    fetchServices();
+  }, []);
+
   return (
     <section className="min-h-screen flex items-center justify-center relative overflow-hidden pt-20 bg-gradient-to-b from-neutral-900 via-black to-neutral-900">
       <div className="absolute inset-0 bg-[radial-gradient(circle_at_20%_80%,#ff000020_0%,transparent_50%),radial-gradient(circle_at_80%_20%,#ff000020_0%,transparent_50%)]" />
@@ -69,27 +85,29 @@ export const HeroSection: React.FC<HeroProps> = ({ onBookNow }) => {
           </div>
 
           {/* SERVICES ICON GRID */}
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-4 max-w-4xl mx-auto">
-            {services.slice(0, 4).map((service: any, index) => (
-              <motion.div
-                key={service.id}
-                initial={{ opacity: 0, scale: 0.85 }}
-                animate={{ opacity: 1, scale: 1 }}
-                transition={{ delay: 1 + index * 0.1 }}
-                className="group p-4 rounded-2xl bg-white/10 backdrop-blur-xl border border-white/20 hover:bg-white/20 hover:border-primary-500/50 transition-all"
-              >
-                <div className="w-12 h-12 mx-auto mb-2 flex items-center justify-center rounded-xl bg-white/20 group-hover:bg-primary-100 transition-colors">
-                  <span className="text-white group-hover:text-neutral-900 transition-colors">
-                    {serviceIcons[service.name]}
-                  </span>
-                </div>
+          {services.length > 0 && (
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-4 max-w-4xl mx-auto">
+              {services.map((service, index) => (
+                <motion.div
+                  key={service.id}
+                  initial={{ opacity: 0, scale: 0.85 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  transition={{ delay: 1 + index * 0.1 }}
+                  className="group p-4 rounded-2xl bg-white/10 backdrop-blur-xl border border-white/20 hover:bg-white/20 hover:border-primary-500/50 transition-all"
+                >
+                  <div className="w-12 h-12 mx-auto mb-2 flex items-center justify-center rounded-xl bg-white/20 group-hover:bg-primary-100 transition-colors">
+                    <span className="text-white group-hover:text-neutral-900 transition-colors">
+                      {serviceIcons[service.service_name] || <Leaf className="w-5 h-5" />}
+                    </span>
+                  </div>
 
-                <p className="text-sm font-medium text-neutral-100 text-center">
-                  {service.name}
-                </p>
-              </motion.div>
-            ))}
-          </div>
+                  <p className="text-sm font-medium text-neutral-100 text-center">
+                    {service.service_name}
+                  </p>
+                </motion.div>
+              ))}
+            </div>
+          )}
         </motion.div>
       </div>
     </section>

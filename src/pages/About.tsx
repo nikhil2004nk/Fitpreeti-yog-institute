@@ -1,10 +1,12 @@
 import { motion } from 'framer-motion';
+import { useState, useEffect } from 'react';
 import { Navbar } from '../components/layout/Navbar';
 import { Footer } from '../components/layout/Footer';
 import { Button } from '../components/ui/Button';
 import { FiAward, FiHeart, FiUsers, FiActivity, FiInstagram, FiFacebook, FiLinkedin } from 'react-icons/fi';
 import instituteData from '../data/institute.json';
-import { trainers } from '../data/trainers';
+import { trainerService, type Trainer } from '../services/trainers';
+import { getAssetUrl } from '../utils/url';
 
 interface Milestone {
   year: string;
@@ -152,6 +154,40 @@ const milestoneVariants: Variants = {
 
 export const About: React.FC = () => {
   const { name } = instituteData as any;
+  const [trainers, setTrainers] = useState<Trainer[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchTrainers = async () => {
+      try {
+        const data = await trainerService.getAllTrainers();
+        // Filter only active trainers
+        setTrainers(data.filter(t => t.isActive));
+      } catch (err) {
+        console.error('Failed to load trainers:', err);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchTrainers();
+  }, []);
+
+  // Helper function to map backend trainer to frontend format
+  const mapTrainer = (trainer: Trainer) => ({
+    id: trainer.id,
+    name: trainer.name,
+    role: trainer.title || 'Trainer',
+    bio: trainer.bio || '',
+    image: trainer.profileImage ? getAssetUrl(trainer.profileImage) : '/images/trainer-placeholder.jpg',
+    specialties: trainer.specializations || [],
+    experience: trainer.experienceYears ? `${trainer.experienceYears}+ years` : 'Experienced',
+    certifications: trainer.certifications || [],
+    social: {
+      instagram: trainer.socialMedia?.instagram,
+      facebook: undefined, // Backend doesn't have facebook
+      linkedin: undefined, // Backend doesn't have linkedin
+    }
+  });
 
   return (
     <>
@@ -448,107 +484,132 @@ export const About: React.FC = () => {
             </p>
           </motion.div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-            {trainers.map((trainer) => (
-              <motion.div
-                key={trainer.id}
-                initial={{ opacity: 0, y: 40 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ duration: 0.5 }}
-                className="bg-white rounded-2xl overflow-hidden shadow-lg hover:shadow-xl transition-shadow duration-300"
-              >
-                <div className="h-64 overflow-hidden">
-                  <img 
-                    src={trainer.image} 
-                    alt={trainer.name}
-                    className="w-full h-full object-cover hover:scale-105 transition-transform duration-500"
-                    onError={(e) => {
-                      // Fallback image in case the trainer image doesn't load
-                      (e.target as HTMLImageElement).src = '/images/trainer-placeholder.jpg';
-                    }}
-                  />
-                </div>
-                <div className="p-6">
-                  <div className="flex justify-between items-start mb-4">
-                    <div>
-                      <h3 className="text-xl font-bold text-gray-900">{trainer.name}</h3>
-                      <p className="text-red-600 font-medium">{trainer.role}</p>
+          {loading ? (
+            <div className="text-center py-12">
+              <div className="inline-block animate-spin rounded-full h-8 w-8 border-b-2 border-red-600"></div>
+              <p className="mt-4 text-gray-600">Loading trainers...</p>
+            </div>
+          ) : trainers.length === 0 ? (
+            <div className="text-center py-12">
+              <p className="text-gray-600">No trainers available at the moment.</p>
+            </div>
+          ) : (
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+              {trainers.map((trainer) => {
+                const mappedTrainer = mapTrainer(trainer);
+                return (
+                  <motion.div
+                    key={mappedTrainer.id}
+                    initial={{ opacity: 0, y: 40 }}
+                    whileInView={{ opacity: 1, y: 0 }}
+                    viewport={{ once: true }}
+                    transition={{ duration: 0.5 }}
+                    className="bg-white rounded-2xl overflow-hidden shadow-lg hover:shadow-xl transition-shadow duration-300"
+                  >
+                    <div className="h-64 overflow-hidden">
+                      <img 
+                        src={mappedTrainer.image} 
+                        alt={mappedTrainer.name}
+                        className="w-full h-full object-cover hover:scale-105 transition-transform duration-500"
+                        onError={(e) => {
+                          const target = e.target as HTMLImageElement;
+                          if (!target.dataset.fallbackSet) {
+                            target.dataset.fallbackSet = 'true';
+                            target.src = 'data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" width="300" height="300"%3E%3Crect fill="%23e5e7eb" width="300" height="300"/%3E%3Ctext fill="%239ca3af" font-family="sans-serif" font-size="14" dy="10.5" font-weight="bold" x="50%25" y="50%25" text-anchor="middle"%3ENo Image%3C/text%3E%3C/svg%3E';
+                          } else {
+                            target.style.display = 'none';
+                          }
+                        }}
+                      />
                     </div>
-                    <div className="bg-red-100 text-red-700 text-sm font-medium px-3 py-1 rounded-full">
-                      {trainer.experience} Exp
-                    </div>
-                  </div>
-                  
-                  <p className="text-gray-600 mb-4">{trainer.bio}</p>
-                  
-                  <div className="mb-4">
-                    <h4 className="font-semibold text-gray-900 mb-2">Specializes in:</h4>
-                    <div className="flex flex-wrap gap-2">
-                      {trainer.specialties.map((specialty, index) => (
-                        <span 
-                          key={index}
-                          className="inline-block bg-gray-100 text-gray-700 text-xs px-3 py-1 rounded-full"
-                        >
-                          {specialty}
-                        </span>
-                      ))}
-                    </div>
-                  </div>
-                  
-                  <div className="mt-6 pt-4 border-t border-gray-100">
-                    <h4 className="font-semibold text-gray-900 mb-2">Certifications:</h4>
-                    <ul className="space-y-1 text-sm text-gray-600">
-                      {trainer.certifications.map((cert, index) => (
-                        <li key={index} className="flex items-start">
-                          <span className="text-red-500 mr-2 mt-1">•</span>
-                          <span>{cert}</span>
-                        </li>
-                      ))}
-                    </ul>
-                  </div>
-                  
-                  {trainer.social && (
-                    <div className="mt-6 flex space-x-4">
-                      {trainer.social.instagram && (
-                        <a 
-                          href={trainer.social.instagram} 
-                          target="_blank" 
-                          rel="noopener noreferrer"
-                          className="text-gray-400 hover:text-pink-600 transition-colors"
-                          aria-label={`${trainer.name}'s Instagram`}
-                        >
-                          <FiInstagram className="w-5 h-5" />
-                        </a>
+                    <div className="p-6">
+                      <div className="flex justify-between items-start mb-4">
+                        <div>
+                          <h3 className="text-xl font-bold text-gray-900">{mappedTrainer.name}</h3>
+                          <p className="text-red-600 font-medium">{mappedTrainer.role}</p>
+                        </div>
+                        <div className="bg-red-100 text-red-700 text-sm font-medium px-3 py-1 rounded-full">
+                          {mappedTrainer.experience} Exp
+                        </div>
+                      </div>
+                      
+                      {mappedTrainer.bio && (
+                        <p className="text-gray-600 mb-4">{mappedTrainer.bio}</p>
                       )}
-                      {trainer.social.facebook && (
-                        <a 
-                          href={trainer.social.facebook} 
-                          target="_blank" 
-                          rel="noopener noreferrer"
-                          className="text-gray-400 hover:text-blue-600 transition-colors"
-                          aria-label={`${trainer.name}'s Facebook`}
-                        >
-                          <FiFacebook className="w-5 h-5" />
-                        </a>
+                      
+                      {mappedTrainer.specialties.length > 0 && (
+                        <div className="mb-4">
+                          <h4 className="font-semibold text-gray-900 mb-2">Specializes in:</h4>
+                          <div className="flex flex-wrap gap-2">
+                            {mappedTrainer.specialties.map((specialty, index) => (
+                              <span 
+                                key={index}
+                                className="inline-block bg-gray-100 text-gray-700 text-xs px-3 py-1 rounded-full"
+                              >
+                                {specialty}
+                              </span>
+                            ))}
+                          </div>
+                        </div>
                       )}
-                      {trainer.social.linkedin && (
-                        <a 
-                          href={trainer.social.linkedin} 
-                          target="_blank" 
-                          rel="noopener noreferrer"
-                          className="text-gray-400 hover:text-blue-700 transition-colors"
-                          aria-label={`${trainer.name}'s LinkedIn`}
-                        >
-                          <FiLinkedin className="w-5 h-5" />
-                        </a>
+                      
+                      {mappedTrainer.certifications.length > 0 && (
+                        <div className="mt-6 pt-4 border-t border-gray-100">
+                          <h4 className="font-semibold text-gray-900 mb-2">Certifications:</h4>
+                          <ul className="space-y-1 text-sm text-gray-600">
+                            {mappedTrainer.certifications.map((cert, index) => (
+                              <li key={index} className="flex items-start">
+                                <span className="text-red-500 mr-2 mt-1">•</span>
+                                <span>{cert}</span>
+                              </li>
+                            ))}
+                          </ul>
+                        </div>
+                      )}
+                      
+                      {mappedTrainer.social && (mappedTrainer.social.instagram || mappedTrainer.social.facebook || mappedTrainer.social.linkedin) && (
+                        <div className="mt-6 flex space-x-4">
+                          {mappedTrainer.social.instagram && (
+                            <a 
+                              href={mappedTrainer.social.instagram} 
+                              target="_blank" 
+                              rel="noopener noreferrer"
+                              className="text-gray-400 hover:text-pink-600 transition-colors"
+                              aria-label={`${mappedTrainer.name}'s Instagram`}
+                            >
+                              <FiInstagram className="w-5 h-5" />
+                            </a>
+                          )}
+                          {mappedTrainer.social.facebook && (
+                            <a 
+                              href={mappedTrainer.social.facebook} 
+                              target="_blank" 
+                              rel="noopener noreferrer"
+                              className="text-gray-400 hover:text-blue-600 transition-colors"
+                              aria-label={`${mappedTrainer.name}'s Facebook`}
+                            >
+                              <FiFacebook className="w-5 h-5" />
+                            </a>
+                          )}
+                          {mappedTrainer.social.linkedin && (
+                            <a 
+                              href={mappedTrainer.social.linkedin} 
+                              target="_blank" 
+                              rel="noopener noreferrer"
+                              className="text-gray-400 hover:text-blue-700 transition-colors"
+                              aria-label={`${mappedTrainer.name}'s LinkedIn`}
+                            >
+                              <FiLinkedin className="w-5 h-5" />
+                            </a>
+                          )}
+                        </div>
                       )}
                     </div>
-                  )}
-                </div>
-              </motion.div>
-            ))}
-          </div>
+                  </motion.div>
+                );
+              })}
+            </div>
+          )}
         </div>
       </section>
 

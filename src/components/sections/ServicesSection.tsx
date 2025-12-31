@@ -1,8 +1,8 @@
 import { motion, type Variants } from "framer-motion";
-import type { Service } from "../../types";
+import { useState, useEffect } from "react";
 import { Button } from "../ui/Button";
 import { Card } from "../ui/Card";
-import services from "../../data/services";
+import { serviceService, type Service } from "../../services/services";
 
 /* =======================
    Animations
@@ -59,6 +59,24 @@ interface ServicesSectionProps {
 ======================= */
 
 export const ServicesSection: React.FC<ServicesSectionProps> = ({ onBook, theme = "default" }) => {
+  const [services, setServices] = useState<Service[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchServices = async () => {
+      try {
+        const data = await serviceService.getAllServices();
+        // Filter only active services
+        setServices(data.filter(s => s.is_active));
+      } catch (err) {
+        console.error('Failed to load services:', err);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchServices();
+  }, []);
+
   // Theme-based classes
   const bgSection = theme === "red-black-corporate" ? "bg-white" : "bg-neutral-50";
   const textHeading = theme === "red-black-corporate" ? "text-red-900" : "text-neutral-900";
@@ -87,14 +105,24 @@ export const ServicesSection: React.FC<ServicesSectionProps> = ({ onBook, theme 
         </motion.div>
 
         {/* Services Grid */}
-        <motion.div
-          variants={containerVariants}
-          initial="hidden"
-          whileInView="visible"
-          viewport={{ once: true }}
-          className="grid grid-cols-1 gap-8 md:grid-cols-2 lg:gap-12"
-        >
-          {(services as Service[]).map((service) => (
+        {loading ? (
+          <div className="text-center py-12">
+            <div className="inline-block animate-spin rounded-full h-8 w-8 border-b-2 border-red-600"></div>
+            <p className="mt-4 text-gray-600">Loading services...</p>
+          </div>
+        ) : services.length === 0 ? (
+          <div className="text-center py-12">
+            <p className="text-gray-600">No services available at the moment.</p>
+          </div>
+        ) : (
+          <motion.div
+            variants={containerVariants}
+            initial="hidden"
+            whileInView="visible"
+            viewport={{ once: true }}
+            className="grid grid-cols-1 gap-8 md:grid-cols-2 lg:gap-12"
+          >
+            {services.map((service) => (
             <motion.div 
               key={service.id} 
               variants={itemVariants}
@@ -102,25 +130,38 @@ export const ServicesSection: React.FC<ServicesSectionProps> = ({ onBook, theme 
               className="group relative"
             >
               <Card hoverEffect className="h-full transition-all duration-300 group-hover:shadow-xl group-hover:border-transparent">
-                <div className="relative mb-8 overflow-hidden rounded-3xl">
+                  <div className="relative mb-8 overflow-hidden rounded-3xl">
                   <div className="relative overflow-hidden rounded-t-2xl">
-                    <img
-                      src={service.image}
-                      alt={service.name}
-                      className="h-64 w-full object-cover transition-all duration-700 group-hover:scale-110"
-                    />
+                    {service.image_url && (
+                      <img
+                        src={service.image_url}
+                        alt={service.service_name}
+                        className="h-64 w-full object-cover transition-all duration-700 group-hover:scale-110"
+                        onError={(e) => {
+                          const target = e.target as HTMLImageElement;
+                          if (!target.dataset.fallbackSet) {
+                            target.dataset.fallbackSet = 'true';
+                            target.src = 'data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" width="300" height="200"%3E%3Crect fill="%23e5e7eb" width="300" height="200"/%3E%3Ctext fill="%239ca3af" font-family="sans-serif" font-size="14" dy="10.5" font-weight="bold" x="50%25" y="50%25" text-anchor="middle"%3ENo Image%3C/text%3E%3C/svg%3E';
+                          } else {
+                            target.style.display = 'none';
+                          }
+                        }}
+                      />
+                    )}
                     <div className="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
                   </div>
 
-                  <div className="absolute right-6 top-6">
-                    <span className={`rounded-2xl px-4 py-2 text-xs font-bold shadow-lg ${badgeBg} ${badgeText}`}>
-                      {service.category.toUpperCase()}
-                    </span>
-                  </div>
+                  {service.category && (
+                    <div className="absolute right-6 top-6">
+                      <span className={`rounded-2xl px-4 py-2 text-xs font-bold shadow-lg ${badgeBg} ${badgeText}`}>
+                        {service.category.toUpperCase()}
+                      </span>
+                    </div>
+                  )}
                 </div>
 
                 <h3 className={`mb-4 text-3xl font-bold ${textHeading}`}>
-                  {service.name}
+                  {service.service_name}
                 </h3>
 
                 <p className={`mb-6 text-lg leading-relaxed ${textBody}`}>
@@ -132,7 +173,7 @@ export const ServicesSection: React.FC<ServicesSectionProps> = ({ onBook, theme 
                     ₹{service.price}
                   </span>
                   <span className="rounded-xl bg-gray-100 px-4 py-2 text-sm font-semibold uppercase tracking-wider text-gray-700">
-                    {service.duration}
+                    {service.duration_minutes} min
                   </span>
                 </div>
 
@@ -142,12 +183,13 @@ export const ServicesSection: React.FC<ServicesSectionProps> = ({ onBook, theme 
                   fullWidth
                   onClick={() => onBook(service.id)}
                 >
-                  Book {service.name}
+                  Book {service.service_name}
                 </Button>
               </Card>
             </motion.div>
-          ))}
-        </motion.div>
+            ))}
+          </motion.div>
+        )}
       </div>
     </section>
   );

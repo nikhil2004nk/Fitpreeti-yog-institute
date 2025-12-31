@@ -8,6 +8,7 @@ import { useAuth } from '../../contexts/AuthContext';
 import { PublicNavItems } from '../navbar/PublicNavItems';
 import { AdminNavItems } from '../navbar/AdminNavItems';
 import { TrainerNavItems } from '../navbar/TrainerNavItems';
+import { CustomerNavItems } from '../navbar/CustomerNavItems';
 import { UserMenu } from '../navbar/UserMenu';
 import { MobileNavItems } from '../navbar/MobileNavItems';
 import { BookNowButton } from '../navbar/BookNowButton';
@@ -54,7 +55,7 @@ export const Navbar: React.FC = () => {
     }
   };
 
-  // Get role-specific navigation items (Admin and Trainer only)
+  // Get role-specific navigation items
   const renderRoleNavItems = () => {
     if (!isAuthenticated || !user) return null;
 
@@ -64,8 +65,9 @@ export const Navbar: React.FC = () => {
       case 'trainer':
         return <TrainerNavItems isScrolled={isScrolled} />;
       case 'customer':
+        return <CustomerNavItems isScrolled={isScrolled} />;
       default:
-        return null; // Customers don't have role-specific nav items, they use Book Now button
+        return null;
     }
   };
 
@@ -109,12 +111,12 @@ export const Navbar: React.FC = () => {
           {/* Desktop Nav */}
           <ul className="hidden lg:flex items-center space-x-4 xl:space-x-8">
             <PublicNavItems isScrolled={isScrolled} />
-            {/* Show Book Now only for customers and non-authenticated users */}
-            {(!isAuthenticated || user?.role === 'customer') && (
+            {/* Show Book Now only for non-authenticated users */}
+            {!isAuthenticated && (
               <BookNowButton variant="desktop" />
             )}
-            {/* Role-specific navigation items (Admin/Trainer only) */}
-            {isAuthenticated && user?.role !== 'customer' && renderRoleNavItems()}
+            {/* Role-specific navigation items */}
+            {isAuthenticated && renderRoleNavItems()}
             {/* User menu (Dashboard link, user name, logout button) */}
             <UserMenu
               user={user}
@@ -128,12 +130,12 @@ export const Navbar: React.FC = () => {
           {/* Tablet Nav (hidden on mobile and desktop) */}
           <ul className="hidden md:flex lg:hidden items-center space-x-2">
             <PublicNavItems isScrolled={isScrolled} />
-            {/* Show Book Now only for customers and non-authenticated users */}
-            {(!isAuthenticated || user?.role === 'customer') && (
+            {/* Show Book Now only for non-authenticated users */}
+            {!isAuthenticated && (
               <BookNowButton variant="tablet" />
             )}
-            {/* Role-specific navigation items (Admin/Trainer only) */}
-            {isAuthenticated && user?.role !== 'customer' && renderRoleNavItems()}
+            {/* Role-specific navigation items */}
+            {isAuthenticated && renderRoleNavItems()}
             {/* User menu */}
             <UserMenu
               user={user}
