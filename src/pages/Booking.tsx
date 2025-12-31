@@ -88,16 +88,56 @@ export const Booking: React.FC = () => {
     // Debounce API calls to prevent rate limiting
     const timeoutId = setTimeout(async () => {
       setLoadingSlots(true);
+      setError(''); // Clear previous errors
       try {
+        console.log('Fetching slots for:', {
+          serviceId: selectedService.id,
+          serviceName: selectedService.service_name,
+          date: selectedDate,
+          dateFormatted: new Date(selectedDate).toISOString()
+        });
+        
         const slotsData = await bookingService.getAvailableSlots(selectedService.id, selectedDate);
-        setAvailableSlots(slotsData.available_slots || []);
+        console.log('Available slots response:', slotsData);
+        console.log('Available slots array:', slotsData?.available_slots);
+        console.log('Booked slots array:', slotsData?.booked_slots);
+        
+        if (slotsData && slotsData.available_slots && Array.isArray(slotsData.available_slots)) {
+          if (slotsData.available_slots.length > 0) {
+            setAvailableSlots(slotsData.available_slots);
+            setError(''); // Clear any previous errors
+          } else {
+            setAvailableSlots([]);
+            setError('No time slots available for this date. The class schedule may not have slots configured for this date, or all slots may be booked. Please try another date or contact us.');
+          }
+        } else {
+          console.warn('Unexpected slots data format:', slotsData);
+          setAvailableSlots([]);
+          setError('No time slots available for this date. Please try another date.');
+        }
         setSelectedTime(''); // Reset time when slots change
       } catch (err: any) {
         console.error('Failed to load available slots:', err);
-        if (err?.message?.includes('429') || err?.statusCode === 429) {
-          setError('Too many requests. Please wait a moment and try again.');
-        }
+        console.error('Error details:', {
+          message: err?.message,
+          statusCode: err?.statusCode,
+          data: err?.data,
+          stack: err?.stack
+        });
         setAvailableSlots([]);
+        
+        // Handle different error cases
+        if (err?.statusCode === 429 || err?.message?.includes('429')) {
+          setError('Too many requests. Please wait a moment and try again.');
+        } else if (err?.statusCode === 401 || err?.message?.includes('401') || err?.message?.includes('Unauthorized')) {
+          setError('Please login to view available time slots.');
+        } else if (err?.statusCode === 404 || err?.message?.includes('404') || err?.message?.includes('not found')) {
+          setError('Service not found. Please refresh the page.');
+        } else if (err?.message) {
+          setError(`Unable to load time slots: ${err.message}`);
+        } else {
+          setError('Unable to load available time slots. Please check the console for details or contact support.');
+        }
       } finally {
         setLoadingSlots(false);
       }
@@ -196,7 +236,13 @@ export const Booking: React.FC = () => {
       // Convert time to 24-hour format for API
       const bookingTime = convertTimeTo24Hour(selectedTime);
       
-      await bookingService.createBooking({
+      if (!selectedService) {
+        setError('Please select a service');
+        setIsSubmitting(false);
+        return;
+      }
+      
+      const bookingData = {
         service_id: selectedService.id,
         booking_date: selectedDate,
         booking_time: bookingTime,
@@ -204,7 +250,13 @@ export const Booking: React.FC = () => {
         email: formData.email.trim(),
         phone: formData.phone.replace(/\D/g, ''), // Remove non-digits
         special_requests: notes.trim() || undefined,
-      });
+        amount: selectedService.price || 0, // Include service price as amount
+      };
+      
+      console.log('Creating booking with data:', bookingData);
+      
+      const result = await bookingService.createBooking(bookingData);
+      console.log('Booking created successfully:', result);
 
       setShowSuccessModal(true);
     } catch (err: any) {
@@ -397,7 +449,7 @@ export const Booking: React.FC = () => {
                     className="w-full px-4 py-4 rounded-2xl border-2 border-slate-200 focus:outline-none focus:ring-4 focus:ring-accent/30 bg-white/50 disabled:opacity-50 disabled:cursor-not-allowed"
                     value={selectedTime}
                     onChange={(e) => setSelectedTime(e.target.value)}
-                    disabled={!selectedDate || loadingSlots || availableSlots.length === 0}
+                    disabled={!selectedDate || loadingSlots}
                   >
                     <option value="">
                       {loadingSlots 
@@ -414,6 +466,16 @@ export const Booking: React.FC = () => {
                       </option>
                     ))}
                   </select>
+                  {!loadingSlots && selectedDate && availableSlots.length === 0 && error && (
+                    <p className="mt-2 text-sm text-amber-600">
+                      {error}
+                    </p>
+                  )}
+                  {!loadingSlots && selectedDate && availableSlots.length === 0 && !error && (
+                    <p className="mt-2 text-sm text-gray-500">
+                      No time slots available for this date. Please try another date or contact us.
+                    </p>
+                  )}
                 </div>
               </div>
 
