@@ -1,4 +1,32 @@
-# React + TypeScript + Vite
+# FitPreeti Yoga Institute - Frontend
+
+React + TypeScript + Vite application for FitPreeti Yoga Institute.
+
+## API Configuration
+
+The application connects to the backend API at:
+```
+http://localhost:3000/api/v1
+```
+
+### Environment Variables
+
+Create a `.env` file in the root directory to override the API base URL:
+
+```env
+VITE_API_BASE_URL=http://localhost:3000/api/v1
+```
+
+For production, update this to your production API URL:
+```env
+VITE_API_BASE_URL=https://your-api-domain.com/api/v1
+```
+
+**Note:** The default base URL is already set to `http://localhost:3000/api/v1` in the service files, so you don't need to create a `.env` file unless you want to override it.
+
+---
+
+## React + TypeScript + Vite
 
 This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
 

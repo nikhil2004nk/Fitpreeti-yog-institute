@@ -34,3 +34,26 @@ export interface InstituteData {
   email: string;
   address: string;
 }
+
+export interface User {
+  id?: string;
+  sub?: string; // User ID from JWT
+  name: string;
+  email?: string;
+  phone: string;
+  role: 'customer' | 'admin' | 'trainer';
+  created_at?: string;
+}
+
+export interface RegisterData {
+  name: string;
+  email?: string;
+  phone: string;
+  pin: string;
+  role?: 'customer' | 'admin' | 'trainer';
+}
+
+export interface LoginData {
+  phone: string;
+  pin: string;
+}

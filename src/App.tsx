@@ -6,6 +6,10 @@ import { Booking } from './pages/Booking';
 import { OnlineClasses } from './pages/OnlineClasses';
 import { CorporateWellness } from './pages/CorporateWellness';
 import { About } from './pages/About';
+import { Login } from './pages/Login';
+import { Register } from './pages/Register';
+import { Dashboard } from './pages/Dashboard';
+import { ProtectedRoute } from './components/auth/ProtectedRoute';
 
 const App: React.FC = () => {
   return (
@@ -17,6 +21,16 @@ const App: React.FC = () => {
       <Route path="/contact" element={<Contact />} />
       <Route path="/booking" element={<Booking />} />
       <Route path="/about" element={<About />} />
+      <Route path="/login" element={<Login />} />
+      <Route path="/register" element={<Register />} />
+      <Route 
+        path="/dashboard" 
+        element={
+          <ProtectedRoute>
+            <Dashboard />
+          </ProtectedRoute>
+        } 
+      />
     </Routes>
   );
 };

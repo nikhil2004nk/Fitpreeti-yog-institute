@@ -5,5 +5,8 @@ export const ROUTES = {
   CONTACT: '/contact',
   BOOKING: '/booking',
   CORPORATE: '/corporate-wellness',
-  ONLINE: '/online-classes'
+  ONLINE: '/online-classes',
+  LOGIN: '/login',
+  REGISTER: '/register',
+  DASHBOARD: '/dashboard'
 } as const;
