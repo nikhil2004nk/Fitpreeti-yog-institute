@@ -149,7 +149,13 @@
 
 /* Custom slick dots */
 .slick-dots {
-  bottom: -40px;
+  bottom: -30px;
+}
+
+@media (min-width: 640px) {
+  .slick-dots {
+    bottom: -40px;
+  }
 }
 
 .slick-dots li {
@@ -157,9 +163,15 @@
 }
 
 .slick-dots li button:before {
-  font-size: 10px;
+  font-size: 8px;
   color: #e5e7eb;
   opacity: 0.5;
+}
+
+@media (min-width: 640px) {
+  .slick-dots li button:before {
+    font-size: 10px;
+  }
 }
 
 .slick-dots li.slick-active button:before {
@@ -170,12 +182,17 @@
 /* Custom arrow positioning */
 .testimonial-slider {
   position: relative;
-  padding: 0 40px;
+  padding: 0 20px;
 }
 
-/* Responsive adjustments */
-@media (max-width: 768px) {
+@media (min-width: 640px) {
   .testimonial-slider {
-    padding: 0 10px;
+    padding: 0 30px;
+  }
+}
+
+@media (min-width: 768px) {
+  .testimonial-slider {
+    padding: 0 40px;
   }
 }
