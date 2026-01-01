@@ -2,6 +2,7 @@ import { motion } from 'framer-motion';
 import { useState, useEffect } from 'react';
 import { Button } from '../ui/Button';
 import { serviceService, type Service } from '../../services/services';
+import { useContentSection } from '../../hooks/useCMS';
 import type { ReactNode } from 'react';
 
 import { Dumbbell, Music, Flame, Leaf } from 'lucide-react';
@@ -21,6 +22,7 @@ const serviceIcons: Record<string, ReactNode> = {
 
 export const HeroSection: React.FC<HeroProps> = ({ onBookNow }) => {
   const [services, setServices] = useState<Service[]>([]);
+  const { section: heroSection } = useContentSection('hero');
 
   useEffect(() => {
     const fetchServices = async () => {
@@ -35,8 +37,42 @@ export const HeroSection: React.FC<HeroProps> = ({ onBookNow }) => {
     fetchServices();
   }, []);
 
+  // Fallback to hardcoded content if CMS data is unavailable
+  // This ensures the site works even if the CMS API is down or not configured
+  const title = heroSection?.content?.title || 'FitPreeti Yog Institute';
+  const subtitle = heroSection?.content?.subtitle || 'Yoga for calm. Zumba for energy. Dance for joy. Fitness for transformation.';
+  const ctaPrimary = heroSection?.content?.cta_primary || { text: 'Book Your Class', link: '/booking', action: 'navigate' };
+  const ctaSecondary = heroSection?.content?.cta_secondary || { text: 'Explore Classes', link: '/services', action: 'navigate' };
+  const bgColor = heroSection?.content?.background_color || '#000000';
+  const bgImage = heroSection?.content?.background_image;
+
+  const handleCTAClick = (cta: any) => {
+    if (cta?.action === 'external' && cta?.link) {
+      window.open(cta.link, '_blank', 'noopener,noreferrer');
+    } else if (cta?.action === 'scroll' && cta?.target) {
+      const element = document.getElementById(cta.target);
+      element?.scrollIntoView({ behavior: 'smooth' });
+    } else if (cta?.link) {
+      if (window.location.hostname.includes('github.io')) {
+        window.location.href = `/Fitpreeti-yog-institute/#${cta.link}`;
+      } else {
+        window.location.hash = cta.link;
+      }
+    } else {
+      onBookNow();
+    }
+  };
+
   return (
-    <section className="min-h-screen flex items-center justify-center relative overflow-hidden pt-20 bg-gradient-to-b from-neutral-900 via-black to-neutral-900">
+    <section 
+      className="min-h-screen flex items-center justify-center relative overflow-hidden pt-20 bg-gradient-to-b from-neutral-900 via-black to-neutral-900"
+      style={{
+        backgroundColor: bgColor,
+        backgroundImage: bgImage ? `url(${bgImage})` : undefined,
+        backgroundSize: 'cover',
+        backgroundPosition: 'center'
+      }}
+    >
       <div className="absolute inset-0 bg-[radial-gradient(circle_at_20%_80%,#ff000020_0%,transparent_50%),radial-gradient(circle_at_80%_20%,#ff000020_0%,transparent_50%)]" />
 
       <div className="container mx-auto px-6 lg:px-12 text-center relative z-10">
@@ -47,41 +83,35 @@ export const HeroSection: React.FC<HeroProps> = ({ onBookNow }) => {
           className="max-w-5xl mx-auto"
         >
           <h1 className="text-5xl md:text-7xl lg:text-8xl font-bold text-white mb-8 leading-tight">
-            FitPreeti Yog Institute
+            {title}
           </h1>
 
           <p className="text-xl md:text-2xl text-neutral-200 mb-12 max-w-3xl mx-auto leading-relaxed">
-            Yoga for <span className="text-primary-400 font-semibold">calm</span>. 
-            Zumba for <span className="text-primary-400 font-semibold">energy</span>. 
-            Dance for <span className="text-primary-400 font-semibold">joy</span>. 
-            Fitness for <span className="text-white font-semibold">transformation</span>.
+            {subtitle}
           </p>
 
           <div className="flex flex-col sm:flex-row gap-6 justify-center items-center mb-16">
-            <Button
-              variant="accent"
-              size="lg"
-              onClick={onBookNow}
-              className="hover:shadow-2xl hover:-translate-y-0.5 transition-all duration-300"
-            >
-              Book Your Class
-            </Button>
+            {ctaPrimary && (
+              <Button
+                variant="accent"
+                size="lg"
+                onClick={() => handleCTAClick(ctaPrimary)}
+                className="hover:shadow-2xl hover:-translate-y-0.5 transition-all duration-300"
+              >
+                {ctaPrimary.text}
+              </Button>
+            )}
 
-            <Button
-              variant="outline"
-              size="lg"
-              onClick={() => {
-                // For GitHub Pages, we need to handle both direct navigation and SPA routing
-                if (window.location.hostname.includes('github.io')) {
-                  window.location.href = '/Fitpreeti-yog-institute/#/services';
-                } else {
-                  window.location.hash = '/services';
-                }
-              }}
-              className="border-2 border-white text-white hover:bg-white/10 transition-all duration-300"
-            >
-              Explore Classes
-            </Button>
+            {ctaSecondary && (
+              <Button
+                variant="outline"
+                size="lg"
+                onClick={() => handleCTAClick(ctaSecondary)}
+                className="border-2 border-white text-white hover:bg-white/10 transition-all duration-300"
+              >
+                {ctaSecondary.text}
+              </Button>
+            )}
           </div>
 
           {/* SERVICES ICON GRID */}

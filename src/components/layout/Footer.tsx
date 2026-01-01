@@ -2,9 +2,18 @@ import instituteData from '../../data/institute.json';
 import { Link } from 'react-router-dom';
 import { FaWhatsapp, FaInstagram, FaFacebook, FaYoutube, FaPhone, FaEnvelope, FaMapMarkerAlt } from 'react-icons/fa';
 import { getAssetUrl } from '../../utils/url';
+import { useInstituteInfo } from '../../hooks/useCMS';
 
 export const Footer: React.FC = () => {
-  const { name, phone, email, address, social } = instituteData as any;
+  const { data: instituteInfo } = useInstituteInfo();
+  
+  // Fallback to hardcoded content if CMS data is unavailable
+  // This ensures the site works even if the CMS API is down or not configured
+  const name = (instituteData as any).name || 'FitPreeti Yog Institute';
+  const phone = instituteInfo?.phone_numbers?.join(' / ') || (instituteData as any).phone;
+  const email = instituteInfo?.email || (instituteData as any).email;
+  const address = instituteInfo?.location || (instituteData as any).address;
+  const social = instituteInfo?.social_media || (instituteData as any).social;
 
   const socialLinks = [
     { icon: FaWhatsapp, url: social?.whatsapp, label: 'WhatsApp', bg: 'bg-green-600', hover: 'hover:bg-green-700' },

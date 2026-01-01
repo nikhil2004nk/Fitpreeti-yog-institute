@@ -1,4 +1,4 @@
-import { apiRequest, apiRequestWithRefresh, type ApiResponse } from './api';
+import { apiRequest, apiRequestWithRefresh } from './api';
 
 export interface Trainer {
   id: string;
@@ -63,7 +63,7 @@ class TrainerService {
   }
 
   async getAllTrainers(): Promise<Trainer[]> {
-    const response = await apiRequestWithRefresh<Trainer[]>('/trainers', {
+    const response = await apiRequest<Trainer[]>('/trainers', {
       method: 'GET',
     });
     return Array.isArray(response.data) ? response.data : (Array.isArray(response) ? response : []);

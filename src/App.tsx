@@ -17,6 +17,7 @@ import { ServiceManagement } from './pages/admin/ServiceManagement';
 import { ReviewManagement } from './pages/admin/ReviewManagement';
 import { ClassScheduleManagement } from './pages/admin/ClassScheduleManagement';
 import { BookingManagement } from './pages/admin/BookingManagement';
+import { CMSManagement } from './pages/admin/CMSManagement';
 // Customer Management Pages
 import { MyBookings } from './pages/customer/MyBookings';
 import { MyProfile } from './pages/customer/MyProfile';
@@ -87,6 +88,14 @@ const App: React.FC = () => {
         element={
           <ProtectedRoute requiredRole="admin">
             <BookingManagement />
+          </ProtectedRoute>
+        } 
+      />
+      <Route 
+        path="/admin/cms" 
+        element={
+          <ProtectedRoute requiredRole="admin">
+            <CMSManagement />
           </ProtectedRoute>
         } 
       />

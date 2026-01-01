@@ -1,6 +1,6 @@
 import { useState, useRef, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { ChevronDown, Users, UserCheck, Package, Star, Calendar, BookOpen, Shield } from 'lucide-react';
+import { ChevronDown, Users, UserCheck, Package, Star, Calendar, BookOpen, Shield, FileText } from 'lucide-react';
 import { ROUTES } from '../../constants/routes';
 
 interface AdminNavDropdownProps {
@@ -36,6 +36,7 @@ export const AdminNavDropdown: React.FC<AdminNavDropdownProps> = ({ isScrolled }
     { to: ROUTES.ADMIN_REVIEWS, label: 'Review Management', icon: Star },
     { to: ROUTES.ADMIN_CLASS_SCHEDULES, label: 'Class Schedule Management', icon: Calendar },
     { to: ROUTES.ADMIN_BOOKINGS, label: 'Booking Management', icon: BookOpen },
+    { to: ROUTES.ADMIN_CMS, label: 'CMS Management', icon: FileText },
   ];
 
   const handleNavClick = (to: string) => {

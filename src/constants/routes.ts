@@ -16,6 +16,7 @@ export const ROUTES = {
   ADMIN_REVIEWS: '/admin/reviews',
   ADMIN_CLASS_SCHEDULES: '/admin/class-schedules',
   ADMIN_BOOKINGS: '/admin/bookings',
+  ADMIN_CMS: '/admin/cms',
   // Customer Management Routes
   CUSTOMER_BOOKINGS: '/customer/bookings',
   CUSTOMER_PROFILE: '/customer/profile'

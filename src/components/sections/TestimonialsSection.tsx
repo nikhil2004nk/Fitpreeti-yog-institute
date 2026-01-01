@@ -1,12 +1,13 @@
-import { useRef } from 'react';
+import { useRef, useState, useEffect } from 'react';
 import Slider from 'react-slick';
 import { motion } from 'framer-motion';
 import { Card } from '../ui/Card';
 import { FiChevronLeft, FiChevronRight } from 'react-icons/fi';
 import 'slick-carousel/slick/slick.css';
 import 'slick-carousel/slick/slick-theme.css';
-
-import testimonials from '../../data/testimonials.json';
+import { reviewService, type Review } from '../../services/reviews';
+import { getAssetUrl } from '../../utils/url';
+import testimonialsFallback from '../../data/testimonials.json';
 
 interface Testimonial {
   id: string;
@@ -19,6 +20,46 @@ interface Testimonial {
 
 export const TestimonialsSection: React.FC = () => {
   const sliderRef = useRef<Slider>(null);
+  const [testimonials, setTestimonials] = useState<Testimonial[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchReviews = async () => {
+      try {
+        setLoading(true);
+        // Fetch approved reviews from API
+        const reviews = await reviewService.getApprovedReviews();
+        
+        if (reviews && reviews.length > 0) {
+          // Map Review to Testimonial format
+          const mappedTestimonials: Testimonial[] = reviews.map((review: Review) => ({
+            id: review.id,
+            name: review.user_name,
+            role: review.reviewer_type || 'Student',
+            image: review.user_profile_image 
+              ? getAssetUrl(review.user_profile_image)
+              : 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=200&h=200&fit=crop&crop=face',
+            quote: review.comment,
+            rating: review.rating,
+          }));
+          
+          // Limit to 10 reviews for homepage display
+          setTestimonials(mappedTestimonials.slice(0, 10));
+        } else {
+          // Fallback to static testimonials if no reviews
+          setTestimonials(testimonialsFallback as Testimonial[]);
+        }
+      } catch (error) {
+        console.error('Failed to fetch reviews:', error);
+        // Fallback to static testimonials on error
+        setTestimonials(testimonialsFallback as Testimonial[]);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchReviews();
+  }, []);
 
   const settings = {
     dots: true,
@@ -74,8 +115,18 @@ export const TestimonialsSection: React.FC = () => {
 
         {/* Slider */}
         <div className="relative px-2 sm:px-4 md:px-6 lg:px-10 pt-4 pb-12 sm:pb-16 md:pb-20">
-          <Slider ref={sliderRef} {...settings} className="testimonial-slider">
-            {(testimonials as Testimonial[]).map((testimonial, index) => (
+          {loading ? (
+            <div className="flex items-center justify-center py-12">
+              <div className="inline-block animate-spin rounded-full h-12 w-12 border-b-2 border-red-600"></div>
+              <p className="ml-4 text-gray-600">Loading reviews...</p>
+            </div>
+          ) : testimonials.length === 0 ? (
+            <div className="text-center py-12">
+              <p className="text-gray-600">No reviews available at the moment.</p>
+            </div>
+          ) : (
+            <Slider ref={sliderRef} {...settings} className="testimonial-slider">
+              {testimonials.map((testimonial, index) => (
               <div key={testimonial.id} className="px-2 sm:px-3 py-2">
                 <motion.div
                   initial={{ opacity: 0, y: 30 }}
@@ -114,6 +165,14 @@ export const TestimonialsSection: React.FC = () => {
                         src={testimonial.image}
                         alt={testimonial.name}
                         className="w-12 h-12 sm:w-14 sm:h-14 rounded-full object-cover border-2 border-white shadow-md flex-shrink-0"
+                        onError={(e) => {
+                          // Fallback to placeholder if image fails to load
+                          const target = e.target as HTMLImageElement;
+                          if (!target.dataset.fallbackSet) {
+                            target.dataset.fallbackSet = 'true';
+                            target.src = 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=200&h=200&fit=crop&crop=face';
+                          }
+                        }}
                       />
                       <div className="ml-3 sm:ml-4 text-left min-w-0">
                         <h4 className="text-base sm:text-lg font-bold text-neutral-900 truncate">
@@ -126,10 +185,12 @@ export const TestimonialsSection: React.FC = () => {
                 </motion.div>
               </div>
             ))}
-          </Slider>
+            </Slider>
+          )}
 
-          {/* Custom arrows */}
-          <div className="absolute -bottom-4 sm:-bottom-6 md:-bottom-10 left-1/2 -translate-x-1/2 flex space-x-3 sm:space-x-4 z-10">
+          {/* Custom arrows - only show when testimonials are loaded */}
+          {!loading && testimonials.length > 0 && (
+            <div className="absolute -bottom-4 sm:-bottom-6 md:-bottom-10 left-1/2 -translate-x-1/2 flex space-x-3 sm:space-x-4 z-10">
             <button
               onClick={() => sliderRef.current?.slickPrev()}
               className="w-10 h-10 sm:w-12 sm:h-12 rounded-full bg-white/90 hover:bg-white text-red-600 flex items-center justify-center shadow-lg hover:shadow-xl transition-all duration-300"
@@ -144,7 +205,8 @@ export const TestimonialsSection: React.FC = () => {
             >
               <FiChevronRight className="w-5 h-5 sm:w-6 sm:h-6" />
             </button>
-          </div>
+            </div>
+          )}
         </div>
       </div>
     </section>

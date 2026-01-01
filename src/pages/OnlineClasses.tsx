@@ -1,8 +1,9 @@
-import { useState } from 'react';
+import { useState, useMemo } from 'react';
 import { motion, type Variants } from 'framer-motion';
 import { Navbar } from '../components/layout/Navbar';
 import { Footer } from '../components/layout/Footer';
-import { weeklySchedule, type ClassSchedule } from '../data/schedule';
+import { weeklySchedule as fallbackSchedule, type ClassSchedule, type WeeklySchedule } from '../data/schedule';
+import { useContentSection } from '../hooks/useCMS';
 import { 
   Video, Clock, Users, ShieldCheck, Calendar, 
   UserCheck, Smartphone, Heart, Award, 
@@ -69,7 +70,40 @@ const ClassCard: React.FC<{ cls: ClassSchedule }> = ({ cls }) => {
 };
 
 export const OnlineClasses: React.FC = () => {
+  const { section: scheduleSection } = useContentSection('weekly_schedule');
   const [selectedDay, setSelectedDay] = useState<string>('Mon');
+
+  // Transform CMS data to WeeklySchedule format or use fallback
+  const weeklySchedule: WeeklySchedule = useMemo(() => {
+    if (scheduleSection?.content?.schedule && Array.isArray(scheduleSection.content.schedule)) {
+      const transformed: WeeklySchedule = {};
+      scheduleSection.content.schedule.forEach((daySchedule: any) => {
+        if (daySchedule.day && Array.isArray(daySchedule.classes)) {
+          transformed[daySchedule.day] = daySchedule.classes.map((cls: any) => ({
+            time: cls.time || '',
+            name: cls.name || '',
+            instructor: cls.instructor || '',
+            level: cls.level || 'All Levels',
+            type: cls.type || 'Yoga'
+          }));
+        }
+      });
+      // If we have data, return it; otherwise fallback
+      if (Object.keys(transformed).length > 0) {
+        return transformed;
+      }
+    }
+    return fallbackSchedule;
+  }, [scheduleSection]);
+
+  // Get CMS content with fallbacks
+  const sectionTitle = scheduleSection?.content?.title || 'Weekly Class Schedule';
+  const sectionDescription = scheduleSection?.content?.description || 'Join our live classes from anywhere. Times are in IST (UTC+5:30).';
+  const ctaTitle = scheduleSection?.content?.cta_title || "Can't Find a Suitable Time?";
+  const ctaDescription = scheduleSection?.content?.cta_description || 'We offer private sessions and custom group classes. Contact us to schedule at your convenience.';
+  const ctaButtonText = scheduleSection?.content?.cta_button_text || 'Contact Us for Custom Schedule';
+  const ctaButtonLink = scheduleSection?.content?.cta_button_link || '/contact';
+
   const days = Object.keys(weeklySchedule);
 
   const stats = [
@@ -149,9 +183,9 @@ export const OnlineClasses: React.FC = () => {
       transition={{ duration: 0.6 }} 
       className="text-center mb-16"
     >
-      <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">Weekly Class Schedule</h2>
+      <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">{sectionTitle}</h2>
       <p className="text-lg text-gray-600 max-w-2xl mx-auto">
-        Join our live classes from anywhere. Times are in IST (UTC+5:30).
+        {sectionDescription}
       </p>
     </motion.div>
 
@@ -189,15 +223,15 @@ export const OnlineClasses: React.FC = () => {
 
         {/* Custom Schedule CTA */}
         <div className="mt-12 text-center px-4">
-          <h3 className="text-2xl font-bold text-gray-900 mb-4">Can't Find a Suitable Time?</h3>
+          <h3 className="text-2xl font-bold text-gray-900 mb-4">{ctaTitle}</h3>
           <p className="text-gray-600 mb-6 max-w-2xl mx-auto">
-            We offer private sessions and custom group classes. Contact us to schedule at your convenience.
+            {ctaDescription}
           </p>
           <a
-            href="/contact"
+            href={ctaButtonLink}
             className="inline-flex items-center justify-center px-6 sm:px-8 py-3.5 text-base font-semibold text-white bg-red-600 hover:bg-red-700 rounded-full transition-all duration-300"
           >
-            Contact Us for Custom Schedule
+            {ctaButtonText}
           </a>
         </div>
       </div>

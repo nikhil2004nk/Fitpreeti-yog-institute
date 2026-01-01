@@ -6,6 +6,7 @@ import { Footer } from '../components/layout/Footer';
 import { Button } from '../components/ui/Button';
 import { FiMapPin, FiMail, FiSend, FiMessageSquare } from 'react-icons/fi';
 import { FaWhatsapp } from 'react-icons/fa';
+import { useInstituteInfo, useContentSection } from '../hooks/useCMS';
 import instituteData from '../data/institute.json';
 
 const subjectOptions = [
@@ -39,7 +40,38 @@ const staggerContainer: Variants = {
 };
 
 export const Contact: React.FC = () => {
-  const { address, phone, email, social } = instituteData as any;
+  const { data: instituteInfo } = useInstituteInfo();
+  const { section: contactHero } = useContentSection('contact_hero');
+  const { section: contactCTA } = useContentSection('contact_cta');
+  
+  // Fallback to hardcoded content if CMS data is unavailable
+  // This ensures the site works even if the CMS API is down or not configured
+  const address = instituteInfo?.location || (instituteData as any).address;
+  const phone = instituteInfo?.phone_numbers?.join(' / ') || (instituteData as any).phone;
+  const email = instituteInfo?.email || (instituteData as any).email;
+  const social = instituteInfo?.social_media || (instituteData as any).social;
+  
+  const heroTitle = contactHero?.content?.title || "Let's Connect";
+  const heroDescription = contactHero?.content?.description || "Have questions or want to book a class? Reach out to us and our team will get back to you as soon as possible.";
+  
+  // CTA Section data with fallbacks
+  const ctaTitle = contactCTA?.content?.title || "Ready to Start Your Fitness Journey?";
+  const ctaDescription = contactCTA?.content?.description || "Join our community and experience the transformation";
+  const ctaPrimary = contactCTA?.content?.cta_primary || { text: 'Book a Free Trial Class', link: '/booking', action: 'navigate' };
+  const ctaSecondary = contactCTA?.content?.cta_secondary || { text: 'Chat on WhatsApp', link: social?.whatsapp || 'https://wa.me/917039142314', action: 'external' };
+  const ctaBgColor = contactCTA?.content?.background_color || '#dc2626';
+  
+  const handleCTAClick = (cta: any) => {
+    if (cta?.action === 'external' && cta?.link) {
+      window.open(cta.link, '_blank', 'noopener,noreferrer');
+    } else if (cta?.link) {
+      if (window.location.hostname.includes('github.io')) {
+        window.location.href = `/Fitpreeti-yog-institute/#${cta.link}`;
+      } else {
+        window.location.hash = cta.link;
+      }
+    }
+  };
 
   const [formData, setFormData] = useState({
     name: '',
@@ -87,13 +119,13 @@ export const Contact: React.FC = () => {
               variants={fadeIn}
               className="text-4xl md:text-5xl lg:text-6xl font-bold mb-6 bg-clip-text text-transparent bg-gradient-to-r from-red-600 to-red-800"
             >
-              Let's Connect
+              {heroTitle}
             </motion.h1>
             <motion.p
               variants={fadeIn}
               className="text-lg md:text-xl text-gray-600 mb-12"
             >
-              Have questions or want to book a class? Reach out to us and our team will get back to you as soon as possible.
+              {heroDescription}
             </motion.p>
           </motion.div>
 
@@ -329,32 +361,39 @@ export const Contact: React.FC = () => {
       </section>
 
       {/* CTA Banner */}
-      <section className="bg-gradient-to-r from-red-600 to-red-700 text-white py-16">
+      <section 
+        className="text-white py-16"
+        style={{ backgroundColor: ctaBgColor }}
+      >
         <div className="container mx-auto px-6 lg:px-12 text-center">
           <div className="max-w-4xl mx-auto">
-            <h2 className="text-2xl md:text-3xl font-bold mb-6">Ready to Start Your Fitness Journey?</h2>
-            <p className="text-lg text-red-100 mb-8">Join our community and experience the transformation</p>
+            <h2 className="text-2xl md:text-3xl font-bold mb-6">{ctaTitle}</h2>
+            {ctaDescription && (
+              <p className="text-lg text-white/90 mb-8">{ctaDescription}</p>
+            )}
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
-              <Button
-                size="lg"
-                onClick={() => window.location.hash = '/booking'}
-                className="group relative overflow-hidden bg-white px-8 text-red-700 hover:bg-red-50"
-              >
-                <span className="relative z-10 font-semibold">
-                  Book a Free Trial Class
-                </span>
-                <span className="absolute inset-0 translate-x-full bg-red-100/40 transition-transform duration-500 group-hover:translate-x-0" />
-              </Button>
-              <Button
-                variant="outline"
-                size="lg"
-                href={social?.whatsapp}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="border-white/70 text-white hover:bg-white/10"
-              >
-                Chat on WhatsApp
-              </Button>
+              {ctaPrimary && (
+                <Button
+                  size="lg"
+                  onClick={() => handleCTAClick(ctaPrimary)}
+                  className="group relative overflow-hidden bg-white px-8 text-red-700 hover:bg-red-50"
+                >
+                  <span className="relative z-10 font-semibold">
+                    {ctaPrimary.text}
+                  </span>
+                  <span className="absolute inset-0 translate-x-full bg-red-100/40 transition-transform duration-500 group-hover:translate-x-0" />
+                </Button>
+              )}
+              {ctaSecondary && (
+                <Button
+                  variant="outline"
+                  size="lg"
+                  onClick={() => handleCTAClick(ctaSecondary)}
+                  className="border-white/70 text-white hover:bg-white/10"
+                >
+                  {ctaSecondary.text}
+                </Button>
+              )}
             </div>
           </div>
         </div>

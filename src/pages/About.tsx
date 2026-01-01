@@ -1,12 +1,17 @@
 import { motion } from 'framer-motion';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { Navbar } from '../components/layout/Navbar';
 import { Footer } from '../components/layout/Footer';
 import { Button } from '../components/ui/Button';
-import { FiAward, FiHeart, FiUsers, FiActivity, FiInstagram, FiFacebook, FiLinkedin } from 'react-icons/fi';
+import { 
+  FiAward, FiHeart, FiUsers, FiActivity, FiInstagram, FiFacebook, FiLinkedin,
+  FiStar, FiTrendingUp, FiTarget, FiZap, FiSmile, FiCalendar, FiClock,
+  FiDollarSign, FiGlobe, FiHome, FiBook, FiVideo, FiMusic
+} from 'react-icons/fi';
 import instituteData from '../data/institute.json';
 import { trainerService, type Trainer } from '../services/trainers';
 import { getAssetUrl } from '../utils/url';
+import { useContentSection } from '../hooks/useCMS';
 
 interface Milestone {
   year: string;
@@ -14,7 +19,8 @@ interface Milestone {
   description: string;
 }
 
-const milestones: Milestone[] = [
+// Fallback data
+const fallbackMilestones: Milestone[] = [
   {
     year: '2014',
     title: 'Humble Beginnings',
@@ -53,7 +59,7 @@ const milestones: Milestone[] = [
   },
 ];
 
-const stats = [
+const fallbackStats = [
   { id: 1, name: 'Years of Excellence', value: '10+', icon: FiAward },
   { id: 2, name: 'Happy Students', value: '500+', icon: FiHeart },
   { id: 3, name: 'Classes Taught', value: '5000+', icon: FiUsers },
@@ -157,6 +163,68 @@ export const About: React.FC = () => {
   const [trainers, setTrainers] = useState<Trainer[]>([]);
   const [loading, setLoading] = useState(true);
 
+  // Fetch CMS data
+  const { section: heroSection } = useContentSection('about_hero');
+  const { section: statsSection } = useContentSection('about_stats');
+  const { section: timelineSection } = useContentSection('about_timeline');
+
+  // Get hero content with fallbacks
+  const heroBadge = heroSection?.content?.badge || 'About Our Journey';
+  const heroTitle = heroSection?.content?.title || `Empowering <span className="text-red-600">Lives</span> Through <br /><span className="text-red-600">Fitness</span> & Wellness`;
+  const heroDescription = heroSection?.content?.description || `For over a decade, ${name} has been transforming lives in Narnaund and beyond through our passionate approach to yoga, dance, and holistic fitness. What started as a small neighborhood studio has grown into a thriving wellness community.`;
+  const heroCTA = heroSection?.content?.cta_primary || { text: 'Start Your Journey Today', link: '/booking' };
+
+  // Get stats with fallbacks
+  const stats = useMemo(() => {
+    if (statsSection?.content?.stats && Array.isArray(statsSection.content.stats) && statsSection.content.stats.length > 0) {
+      return statsSection.content.stats.map((stat: any, index: number) => {
+        const iconMap: Record<string, any> = {
+          'award': FiAward,
+          'heart': FiHeart,
+          'users': FiUsers,
+          'activity': FiActivity,
+          'star': FiStar,
+          'trending-up': FiTrendingUp,
+          'target': FiTarget,
+          'zap': FiZap,
+          'smile': FiSmile,
+          'calendar': FiCalendar,
+          'clock': FiClock,
+          'dollar-sign': FiDollarSign,
+          'globe': FiGlobe,
+          'home': FiHome,
+          'book': FiBook,
+          'video': FiVideo,
+          'music': FiMusic,
+        };
+        const iconName = stat.icon?.toLowerCase() || '';
+        return {
+          id: index + 1,
+          name: stat.name || '',
+          value: stat.value || '',
+          icon: iconMap[iconName] || fallbackStats[index]?.icon || FiAward
+        };
+      });
+    }
+    return fallbackStats;
+  }, [statsSection]);
+
+  // Get milestones with fallbacks
+  const milestones = useMemo(() => {
+    if (timelineSection?.content?.milestones && Array.isArray(timelineSection.content.milestones) && timelineSection.content.milestones.length > 0) {
+      return timelineSection.content.milestones.map((milestone: any) => ({
+        year: milestone.year || '',
+        title: milestone.title || '',
+        description: milestone.description || ''
+      }));
+    }
+    return fallbackMilestones;
+  }, [timelineSection]);
+
+  // Get timeline section title and description
+  const timelineTitle = timelineSection?.content?.title || 'A Decade of <span className="text-red-600">Transformation</span>';
+  const timelineDescription = timelineSection?.content?.description || 'From our humble beginnings to becoming a cornerstone of the Narnaund community, our journey has been one of passion, dedication, and countless success stories.';
+
   useEffect(() => {
     const fetchTrainers = async () => {
       try {
@@ -209,35 +277,42 @@ export const About: React.FC = () => {
           >
             <motion.div variants={fadeIn} className="mb-6">
               <span className="px-4 py-2 bg-red-100 text-red-600 rounded-full text-sm font-medium">
-                About Our Journey
+                {heroBadge}
               </span>
             </motion.div>
             
             <motion.h1 
               variants={fadeIn}
               className="text-4xl md:text-6xl lg:text-7xl font-extrabold mb-6 leading-tight"
-            >
-              Empowering <span className="text-red-600">Lives</span> Through <br />
-              <span className="text-red-600">Fitness</span> & Wellness
-            </motion.h1>
+              dangerouslySetInnerHTML={{ __html: heroTitle }}
+            />
             
             <motion.p 
               variants={fadeIn}
               className="text-lg md:text-xl text-gray-600 max-w-3xl mb-8 leading-relaxed"
             >
-              For over a decade, {name} has been transforming lives in Narnaund and beyond through 
-              our passionate approach to yoga, dance, and holistic fitness. 
-              What started as a small neighborhood studio has grown into a thriving 
-              wellness community.
+              {heroDescription}
             </motion.p>
 
             <motion.div variants={fadeIn} className="flex flex-col sm:flex-row gap-4 mt-12">
-              <button
-                onClick={() => window.location.hash = '/booking'}
-                className="inline-flex items-center justify-center px-8 py-4 text-lg font-semibold text-white bg-red-600 rounded-full hover:bg-red-700 transition-colors duration-300"
-              >
-                Start Your Journey Today
-              </button>
+              {heroCTA?.text && (
+                <button
+                  onClick={() => {
+                    if (heroCTA.action === 'external' && heroCTA.link) {
+                      window.open(heroCTA.link, '_blank', 'noopener,noreferrer');
+                    } else if (heroCTA.link) {
+                      if (window.location.hostname.includes('github.io')) {
+                        window.location.href = `/Fitpreeti-yog-institute/#${heroCTA.link}`;
+                      } else {
+                        window.location.hash = heroCTA.link;
+                      }
+                    }
+                  }}
+                  className="inline-flex items-center justify-center px-8 py-4 text-lg font-semibold text-white bg-red-600 rounded-full hover:bg-red-700 transition-colors duration-300"
+                >
+                  {heroCTA.text}
+                </button>
+              )}
               <button
                 onClick={() => {
                   const element = document.getElementById('our-story');
@@ -299,15 +374,13 @@ export const About: React.FC = () => {
             <motion.h2
               variants={fadeIn}
               className="text-3xl md:text-4xl font-bold text-gray-900 mb-4"
-            >
-              A Decade of <span className="text-red-600">Transformation</span>
-            </motion.h2>
+              dangerouslySetInnerHTML={{ __html: timelineTitle }}
+            />
             <motion.p
               variants={fadeIn}
               className="text-lg text-gray-600 max-w-3xl mx-auto"
             >
-              From our humble beginnings to becoming a cornerstone of the Narnaund community,
-              our journey has been one of passion, dedication, and countless success stories.
+              {timelineDescription}
             </motion.p>
           </motion.div>
 
