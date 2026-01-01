@@ -12,6 +12,7 @@ import instituteData from '../data/institute.json';
 import { trainerService, type Trainer } from '../services/trainers';
 import { getAssetUrl } from '../utils/url';
 import { useContentSection } from '../hooks/useCMS';
+import { fallbackTrainers } from '../data/fallbackData';
 
 interface Milestone {
   year: string;
@@ -230,9 +231,17 @@ export const About: React.FC = () => {
       try {
         const data = await trainerService.getAllTrainers();
         // Filter only active trainers
-        setTrainers(data.filter(t => t.isActive));
+        const activeTrainers = data.filter(t => t.isActive);
+        if (activeTrainers.length > 0) {
+          setTrainers(activeTrainers);
+        } else {
+          // Use fallback data if no active trainers from backend
+          setTrainers(fallbackTrainers);
+        }
       } catch (err) {
         console.error('Failed to load trainers:', err);
+        // Use fallback data when backend fails
+        setTrainers(fallbackTrainers);
       } finally {
         setLoading(false);
       }

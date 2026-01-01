@@ -147,54 +147,113 @@
 }
 
 
-/* Custom slick dots */
-.slick-dots {
-  bottom: -30px;
+/* Custom slick dots - Enhanced for better UX */
+.testimonial-slider .slick-dots {
+  bottom: -45px;
+  display: flex !important;
+  justify-content: center;
+  align-items: center;
+  gap: 8px;
 }
 
 @media (min-width: 640px) {
-  .slick-dots {
-    bottom: -40px;
-  }
-}
-
-.slick-dots li {
-  margin: 0 4px;
-}
-
-.slick-dots li button:before {
-  font-size: 8px;
-  color: #e5e7eb;
-  opacity: 0.5;
-}
-
-@media (min-width: 640px) {
-  .slick-dots li button:before {
-    font-size: 10px;
-  }
-}
-
-.slick-dots li.slick-active button:before {
-  color: #dc2626;
-  opacity: 1;
-}
-
-/* Custom arrow positioning */
-.testimonial-slider {
-  position: relative;
-  padding: 0 20px;
-}
-
-@media (min-width: 640px) {
-  .testimonial-slider {
-    padding: 0 30px;
+  .testimonial-slider .slick-dots {
+    bottom: -50px;
+    gap: 10px;
   }
 }
 
 @media (min-width: 768px) {
-  .testimonial-slider {
-    padding: 0 40px;
+  .testimonial-slider .slick-dots {
+    bottom: -60px;
   }
+}
+
+.testimonial-slider .slick-dots li {
+  margin: 0;
+  width: auto;
+  height: auto;
+}
+
+.testimonial-slider .slick-dots li button {
+  width: 10px;
+  height: 10px;
+  padding: 0;
+  border-radius: 50%;
+  background: #e5e7eb;
+  opacity: 0.5;
+  transition: all 0.3s ease;
+  border: none;
+}
+
+@media (min-width: 640px) {
+  .testimonial-slider .slick-dots li button {
+    width: 12px;
+    height: 12px;
+  }
+}
+
+.testimonial-slider .slick-dots li button:before {
+  display: none;
+}
+
+.testimonial-slider .slick-dots li.slick-active button,
+.testimonial-slider .slick-dots li button:hover {
+  background: #dc2626;
+  opacity: 1;
+  transform: scale(1.2);
+}
+
+.testimonial-slider .slick-dots li button:focus {
+  outline: 2px solid #dc2626;
+  outline-offset: 2px;
+}
+
+/* Custom arrow positioning and styling */
+.testimonial-slider {
+  position: relative;
+  padding: 0;
+}
+
+/* Ensure slides have equal height */
+.testimonial-slider .slick-slide {
+  height: auto;
+}
+
+.testimonial-slider .slick-slide > div {
+  height: 100%;
+}
+
+/* Smooth transitions */
+.testimonial-slider .slick-slide {
+  transition: transform 0.3s ease, opacity 0.3s ease;
+}
+
+/* Center mode styling for mobile */
+.testimonial-slider.slick-center .slick-slide {
+  opacity: 1;
+}
+
+.testimonial-slider .slick-slide:not(.slick-center) {
+  opacity: 0.7;
+}
+
+@media (min-width: 768px) {
+  .testimonial-slider .slick-slide:not(.slick-center) {
+    opacity: 1;
+  }
+}
+
+/* Touch/swipe improvements */
+.testimonial-slider .slick-track {
+  display: flex;
+  align-items: stretch;
+}
+
+/* Loading state */
+.testimonial-slider.slick-initialized {
+  opacity: 1;
+  transition: opacity 0.3s ease;
 }
 
 /* ============================================

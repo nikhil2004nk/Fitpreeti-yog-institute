@@ -8,6 +8,17 @@ export default defineConfig(({ mode }) => {
   return {
     base,
     plugins: [react()],
+    server: {
+      // Proxy API requests to avoid CORS issues in development
+      proxy: {
+        '/api': {
+          target: 'https://fitpreeti-yog-backend.vercel.app',
+          changeOrigin: true,
+          secure: true,
+          rewrite: (path) => path, // Keep the /api path as is
+        },
+      },
+    },
     build: {
       outDir: 'dist',
       chunkSizeWarningLimit: 1000,

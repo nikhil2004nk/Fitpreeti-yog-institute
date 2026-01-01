@@ -3,6 +3,7 @@ import { useState, useEffect } from 'react';
 import { Button } from '../ui/Button';
 import { serviceService, type Service } from '../../services/services';
 import { useContentSection } from '../../hooks/useCMS';
+import { fallbackServices } from '../../data/fallbackData';
 import type { ReactNode } from 'react';
 
 import { Dumbbell, Music, Flame, Leaf } from 'lucide-react';
@@ -29,9 +30,17 @@ export const HeroSection: React.FC<HeroProps> = ({ onBookNow }) => {
       try {
         const data = await serviceService.getAllServices();
         // Filter only active services and take first 4
-        setServices(data.filter(s => s.is_active).slice(0, 4));
+        const activeServices = data.filter(s => s.is_active).slice(0, 4);
+        if (activeServices.length > 0) {
+          setServices(activeServices);
+        } else {
+          // Use fallback data if no active services from backend
+          setServices(fallbackServices.slice(0, 4));
+        }
       } catch (err) {
         console.error('Failed to load services:', err);
+        // Use fallback data when backend fails
+        setServices(fallbackServices.slice(0, 4));
       }
     };
     fetchServices();

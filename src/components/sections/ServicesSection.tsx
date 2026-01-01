@@ -3,6 +3,7 @@ import { useState, useEffect } from "react";
 import { Button } from "../ui/Button";
 import { Card } from "../ui/Card";
 import { serviceService, type Service } from "../../services/services";
+import { fallbackServices } from "../../data/fallbackData";
 
 /* =======================
    Animations
@@ -67,9 +68,17 @@ export const ServicesSection: React.FC<ServicesSectionProps> = ({ onBook, theme 
       try {
         const data = await serviceService.getAllServices();
         // Filter only active services
-        setServices(data.filter(s => s.is_active));
+        const activeServices = data.filter(s => s.is_active);
+        if (activeServices.length > 0) {
+          setServices(activeServices);
+        } else {
+          // Use fallback data if no active services from backend
+          setServices(fallbackServices);
+        }
       } catch (err) {
         console.error('Failed to load services:', err);
+        // Use fallback data when backend fails
+        setServices(fallbackServices);
       } finally {
         setLoading(false);
       }
