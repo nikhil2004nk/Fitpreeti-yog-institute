@@ -67,16 +67,39 @@ export default defineConfig(({ mode }) => {
                 console.log(`✅ Proxy response: ${req.method} ${req.url} -> ${proxyRes.statusCode}`);
                 // Log Set-Cookie headers for auth endpoints
                 if (req.url?.includes('/auth/') && proxyRes.headers['set-cookie']) {
-                  console.log('🍪 Cookies being set:', proxyRes.headers['set-cookie']);
+                  console.log('🍪 Original cookies from backend:', proxyRes.headers['set-cookie']);
+                }
+              }
+              
+              // Rewrite cookies to work with localhost
+              if (proxyRes.headers['set-cookie']) {
+                const cookies = Array.isArray(proxyRes.headers['set-cookie'])
+                  ? proxyRes.headers['set-cookie']
+                  : [proxyRes.headers['set-cookie']];
+                
+                proxyRes.headers['set-cookie'] = cookies.map((cookie: string) => {
+                  // Remove domain attribute (so it defaults to current origin)
+                  let rewritten = cookie.replace(/;\s*[Dd]omain=[^;]*/g, '');
+                  // Remove Secure flag (since we're on HTTP localhost)
+                  rewritten = rewritten.replace(/;\s*[Ss]ecure/g, '');
+                  // Ensure SameSite is set to Lax or None (for cross-origin)
+                  if (!rewritten.includes('SameSite')) {
+                    rewritten += '; SameSite=Lax';
+                  }
+                  return rewritten;
+                });
+                
+                if (mode === 'development' && req.url?.includes('/auth/')) {
+                  console.log('🍪 Rewritten cookies for localhost:', proxyRes.headers['set-cookie']);
                 }
               }
             });
           },
           // Ensure cookies are forwarded properly
           // Remove domain from cookies so they work with localhost
-          cookieDomainRewrite: '',
-          // Keep the path as is (empty string means no rewrite)
-          cookiePathRewrite: '',
+          cookieDomainRewrite: 'localhost',
+          // Keep the path as is
+          cookiePathRewrite: '/',
           // Preserve the original host header for proper cookie handling
           xfwd: true,
         },

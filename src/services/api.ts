@@ -78,6 +78,14 @@ export const apiRequest = async <T = any>(
     
     console.log(`📡 API Request:`, logData);
   }
+  
+  // Log in production for debugging cookie issues
+  if (!import.meta.env.DEV && retryCount === 0 && endpoint.includes('/auth/')) {
+    console.log(`📡 API Request: ${options.method || 'GET'} ${url}`, {
+      credentials: 'include',
+      origin: typeof window !== 'undefined' ? window.location.origin : 'unknown',
+    });
+  }
 
     try {
       const response = await fetch(url, {
@@ -97,6 +105,20 @@ export const apiRequest = async <T = any>(
           ok: response.ok,
           contentType: response.headers.get('content-type'),
         });
+      }
+      
+      // Log cookie headers in production for debugging
+      if (!import.meta.env.DEV && retryCount === 0 && endpoint.includes('/auth/')) {
+        const setCookieHeaders = response.headers.get('set-cookie');
+        if (setCookieHeaders) {
+          console.log('🍪 Set-Cookie headers received:', setCookieHeaders);
+          console.log('⚠️  If cookies are not working, check backend CORS and cookie settings:');
+          console.log('   1. Backend must set cookies with SameSite=None; Secure');
+          console.log('   2. Backend CORS must allow your GitHub Pages domain');
+          console.log('   3. Backend CORS must allow credentials: true');
+        } else {
+          console.warn('⚠️  No Set-Cookie headers in response. Cookies may not be set by backend.');
+        }
       }
 
       // Handle non-JSON responses (e.g., CORS errors)

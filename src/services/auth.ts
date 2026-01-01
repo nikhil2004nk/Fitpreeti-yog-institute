@@ -34,6 +34,10 @@ class AuthService {
       
       if (import.meta.env.DEV) {
         console.log('✅ Login successful');
+        // Check if cookies are available (note: httpOnly cookies won't be accessible via JS)
+        // But we can check if the response had Set-Cookie headers
+        console.log('🍪 Note: Cookies should be set automatically by the browser');
+        console.log('🍪 If subsequent requests fail with 401, cookies may not be set correctly');
       }
       
       return response;
