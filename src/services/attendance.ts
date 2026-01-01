@@ -1,4 +1,4 @@
-import { apiRequest, apiRequestWithRefresh } from './api';
+import { apiRequestWithRefresh } from './api';
 import type { Attendance, CreateAttendanceData, UpdateAttendanceData, AttendanceFilter } from '../types';
 
 class AttendanceService {
@@ -19,7 +19,7 @@ class AttendanceService {
     if (endDate) params.append('end_date', endDate);
     if (params.toString()) url += `?${params.toString()}`;
     
-    const response = await apiRequest<Attendance[]>(url, {
+    const response = await apiRequestWithRefresh<Attendance[]>(url, {
       method: 'GET',
     });
     return Array.isArray(response.data) ? response.data : (Array.isArray(response) ? response : []);
@@ -56,7 +56,7 @@ class AttendanceService {
       if (params.toString()) url += `?${params.toString()}`;
     }
     
-    const response = await apiRequest<Attendance[]>(url, {
+    const response = await apiRequestWithRefresh<Attendance[]>(url, {
       method: 'GET',
     });
     return Array.isArray(response.data) ? response.data : (Array.isArray(response) ? response : []);
@@ -70,7 +70,7 @@ class AttendanceService {
     if (endDate) params.append('end_date', endDate);
     if (params.toString()) url += `?${params.toString()}`;
     
-    const response = await apiRequest<Attendance[]>(url, {
+    const response = await apiRequestWithRefresh<Attendance[]>(url, {
       method: 'GET',
     });
     return Array.isArray(response.data) ? response.data : (Array.isArray(response) ? response : []);
@@ -106,7 +106,7 @@ class AttendanceService {
     if (endDate) params.append('end_date', endDate);
     if (params.toString()) url += `?${params.toString()}`;
     
-    const response = await apiRequest(url, {
+    const response = await apiRequestWithRefresh(url, {
       method: 'GET',
     });
     return response.data || response as unknown as {

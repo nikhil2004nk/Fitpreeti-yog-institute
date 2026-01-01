@@ -129,57 +129,86 @@ export const apiRequest = async <T = any>(
   }
 };
 
-// Token refresh helper (no retries to avoid infinite loops)
-export const refreshAccessToken = async (): Promise<void> => {
-  try {
-    await apiRequest('/auth/refresh', {
-      method: 'POST',
-    }, 0); // No retries for refresh token
-  } catch (error) {
-    // If refresh fails, user needs to login again
-    throw error;
+// Track if we're currently refreshing to prevent multiple simultaneous refresh attempts
+let isRefreshing = false;
+let refreshPromise: Promise<void> | null = null;
+
+// Token refresh helper
+const refreshAccessToken = async (): Promise<void> => {
+  // If already refreshing, wait for the existing refresh to complete
+  if (isRefreshing && refreshPromise) {
+    return refreshPromise;
   }
+
+  isRefreshing = true;
+  refreshPromise = (async () => {
+    try {
+      await apiRequest('/auth/refresh', {
+        method: 'POST',
+      }, 0); // No retries for refresh token
+    } catch (error) {
+      // Refresh failed - clear the promise so we can try again
+      refreshPromise = null;
+      throw error;
+    } finally {
+      isRefreshing = false;
+    }
+  })();
+
+  return refreshPromise;
 };
+
+// Export for use in auth service if needed
+export { refreshAccessToken };
 
 // Interceptor for automatic token refresh on 401
 export const apiRequestWithRefresh = async <T = any>(
   endpoint: string,
   options: RequestInit = {}
 ): Promise<ApiResponse<T>> => {
+  // Step 1: Try the request with the current access_token (sent via cookies)
   try {
     return await apiRequest<T>(endpoint, options);
   } catch (error) {
-    // Only attempt refresh on 401, and don't retry if refresh endpoint itself fails
-    // Also skip refresh if the original error was 400 (bad request - likely no token)
+    // Step 2: If we get a 401, try to refresh the token
+    // Don't attempt refresh for the refresh endpoint itself or login/register
     if (error instanceof ApiError && 
         error.statusCode === 401 && 
         !endpoint.includes('/auth/refresh') &&
-        !endpoint.includes('/auth/profile')) {
+        !endpoint.includes('/auth/login') &&
+        !endpoint.includes('/auth/register')) {
+      
       try {
-        // Try to refresh token (don't retry on 429/500 for refresh endpoint)
-        await apiRequest('/auth/refresh', {
-          method: 'POST',
-        }, 0); // No retries for refresh token
-        // Retry original request
+        // Step 3: Attempt to refresh the access token using refresh_token cookie
+        await refreshAccessToken();
+        
+        // Step 4: Retry the original request with the new access_token
         return await apiRequest<T>(endpoint, options);
       } catch (refreshError) {
-        // Refresh failed - don't redirect on 400 (no refresh token) or network errors
-        // Only redirect on actual auth errors (401/403) when user was previously authenticated
-        if (refreshError instanceof ApiError && 
-            refreshError.statusCode !== 429 && 
-            refreshError.statusCode !== 0 &&
-            refreshError.statusCode !== 400 &&
-            (refreshError.statusCode === 401 || refreshError.statusCode === 403)) {
-          if (typeof window !== 'undefined') {
-            // Use base URL for proper routing in GitHub Pages
-            const basePath = import.meta.env.BASE_URL || '/';
-            window.location.href = `${basePath}#/login`;
+        // Refresh failed - handle based on error type
+        if (refreshError instanceof ApiError) {
+          // 400 = No refresh token (user never logged in or token expired)
+          // 401 = Invalid refresh token (user needs to login again)
+          // 429 = Rate limited (don't redirect)
+          // 0 = Network error (don't redirect)
+          
+          // Only redirect on actual auth failures (401/403), not on missing tokens (400) or network errors
+          if (refreshError.statusCode !== 429 && 
+              refreshError.statusCode !== 0 &&
+              refreshError.statusCode !== 400 &&
+              (refreshError.statusCode === 401 || refreshError.statusCode === 403)) {
+            // User had a session but refresh token is invalid - redirect to login
+            if (typeof window !== 'undefined') {
+              const basePath = import.meta.env.BASE_URL || '/';
+              window.location.href = `${basePath}#/login`;
+            }
           }
         }
-        // Re-throw the original error, not the refresh error
+        // Re-throw the original 401 error, not the refresh error
         throw error;
       }
     }
+    // For non-401 errors, just re-throw
     throw error;
   }
 };
