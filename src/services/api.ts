@@ -162,7 +162,9 @@ export const apiRequestWithRefresh = async <T = any>(
         // Refresh failed, redirect to login only if it's not a rate limit error
         if (refreshError instanceof ApiError && refreshError.statusCode !== 429) {
           if (typeof window !== 'undefined') {
-            window.location.href = '/#/login';
+            // Use base URL for proper routing in GitHub Pages
+            const basePath = import.meta.env.BASE_URL || '/';
+            window.location.href = `${basePath}#/login`;
           }
         }
         throw refreshError;
