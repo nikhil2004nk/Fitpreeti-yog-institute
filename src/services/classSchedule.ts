@@ -1,4 +1,4 @@
-import { apiRequest, apiRequestWithRefresh, type ApiResponse } from './api';
+import { apiRequestWithRefresh } from './api';
 
 export interface ClassSchedule {
   id: string;

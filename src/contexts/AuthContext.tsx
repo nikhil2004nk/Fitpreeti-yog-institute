@@ -1,4 +1,5 @@
-import { createContext, useContext, useState, useEffect, ReactNode } from 'react';
+import { createContext, useContext, useState, useEffect } from 'react';
+import type { ReactNode } from 'react';
 import { authService } from '../services/auth';
 import type { User, RegisterData, LoginData } from '../types';
 
@@ -50,10 +51,10 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
   const login = async (data: LoginData) => {
     try {
       const response = await authService.login(data.phone, data.pin);
-      // Handle nested response structure: response.data.user
-      const user = response.data?.user || response.user;
+      // Handle nested response structure: response.data.user or response.data.data.user
+      const user = response.data?.data?.user || response.data?.user || (response.user as User | undefined);
       if (user) {
-        setUser(user);
+        setUser(user as User);
       } else {
         // If user data not in response, fetch profile
         const userData = await authService.getProfile();

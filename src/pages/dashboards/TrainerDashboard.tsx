@@ -199,7 +199,7 @@ export const TrainerDashboard: React.FC = () => {
                 ) : (
                   <div className="space-y-4">
                     {todaySchedules.map((schedule) => {
-                      const { date, time } = formatDateTime(schedule.start_time);
+                      const { time } = formatDateTime(schedule.start_time);
                       const endTime = new Date(schedule.end_time).toLocaleTimeString('en-US', {
                         hour: '2-digit',
                         minute: '2-digit'

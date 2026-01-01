@@ -50,7 +50,7 @@ export const CTASection: React.FC<{ onBook: () => void }> = ({ onBook }) => {
           className="mx-auto max-w-4xl text-center"
         >
           <h2 className="mb-6 text-3xl font-bold leading-tight md:text-4xl lg:text-5xl">
-            {title.split('\n').map((line, i) => (
+            {title.split('\n').map((line: string, i: number) => (
               <span key={i} className={i > 0 ? 'block text-white/95' : ''}>{line}</span>
             ))}
           </h2>

@@ -1,4 +1,4 @@
-import { apiRequest, apiRequestWithRefresh, type ApiResponse } from './api';
+import { apiRequest, apiRequestWithRefresh } from './api';
 
 export interface Review {
   id: string;

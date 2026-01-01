@@ -1,4 +1,4 @@
-import { apiRequest, apiRequestWithRefresh, type ApiResponse } from './api';
+import { apiRequest, apiRequestWithRefresh } from './api';
 
 // Institute Info Types
 export interface InstituteInfo {
