@@ -25,6 +25,8 @@ import { MyProfile } from './pages/customer/MyProfile';
 import { CustomerAttendance } from './pages/customer/CustomerAttendance';
 // Trainer Management Pages
 import { TrainerAttendance } from './pages/trainer/TrainerAttendance';
+import { TrainerProfile } from './pages/trainer/TrainerProfile';
+import { TrainerSchedule } from './pages/trainer/TrainerSchedule';
 
 const App: React.FC = () => {
   return (
@@ -142,6 +144,22 @@ const App: React.FC = () => {
         element={
           <ProtectedRoute requiredRole="trainer">
             <TrainerAttendance />
+          </ProtectedRoute>
+        } 
+      />
+      <Route 
+        path="/trainer/schedule" 
+        element={
+          <ProtectedRoute requiredRole="trainer">
+            <TrainerSchedule />
+          </ProtectedRoute>
+        } 
+      />
+      <Route 
+        path="/trainer/profile" 
+        element={
+          <ProtectedRoute requiredRole="trainer">
+            <TrainerProfile />
           </ProtectedRoute>
         } 
       />

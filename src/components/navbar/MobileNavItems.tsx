@@ -1,5 +1,5 @@
 import { NavLink } from 'react-router-dom';
-import { LogOut, User, Users, UserCheck, Package, Star, Calendar, BookOpen, FileText, CalendarCheck } from 'lucide-react';
+import { LogOut, User, Users, UserCheck, Package, Star, Calendar, BookOpen, FileText, CalendarCheck, Clock } from 'lucide-react';
 import { ROUTES } from '../../constants/routes';
 import type { User as UserType } from '../../types';
 import { BookNowButton } from './BookNowButton';
@@ -162,24 +162,33 @@ export const MobileNavItems: React.FC<MobileNavItemsProps> = ({
                   Trainer Panel
                 </div>
               </li>
-              <li className="border-b border-gray-100">
-                <NavLink
-                  to={ROUTES.TRAINER_ATTENDANCE}
-                  onClick={() => handleNavClick(ROUTES.TRAINER_ATTENDANCE)}
-                  className={({ isActive }) =>
-                    `block py-3.5 px-4 sm:px-6 pl-10 sm:pl-12 font-medium transition-colors text-sm sm:text-base active:bg-gray-100 touch-manipulation ${
-                      isActive 
-                        ? 'text-red-600 bg-red-50 font-semibold border-l-4 border-red-600' 
-                        : 'text-gray-700 hover:bg-gray-50 hover:text-red-600'
-                    }`
-                  }
-                >
-                  <div className="flex items-center space-x-3">
-                    <CalendarCheck className="h-4 w-4 sm:h-5 sm:w-5 flex-shrink-0" />
-                    <span className="truncate">My Attendance</span>
-                  </div>
-                </NavLink>
-              </li>
+              {[
+                { to: ROUTES.TRAINER_ATTENDANCE, label: 'My Attendance', icon: CalendarCheck },
+                { to: ROUTES.TRAINER_SCHEDULE, label: 'My Schedule', icon: Clock },
+                { to: ROUTES.TRAINER_PROFILE, label: 'My Profile', icon: User },
+              ].map((item) => {
+                const Icon = item.icon;
+                return (
+                  <li key={item.to} className="border-b border-gray-100">
+                    <NavLink
+                      to={item.to}
+                      onClick={() => handleNavClick(item.to)}
+                      className={({ isActive }) =>
+                        `block py-3.5 px-4 sm:px-6 pl-10 sm:pl-12 font-medium transition-colors text-sm sm:text-base active:bg-gray-100 touch-manipulation ${
+                          isActive 
+                            ? 'text-red-600 bg-red-50 font-semibold border-l-4 border-red-600' 
+                            : 'text-gray-700 hover:bg-gray-50 hover:text-red-600'
+                        }`
+                      }
+                    >
+                      <div className="flex items-center space-x-3">
+                        <Icon className="h-4 w-4 sm:h-5 sm:w-5 flex-shrink-0" />
+                        <span className="truncate">{item.label}</span>
+                      </div>
+                    </NavLink>
+                  </li>
+                );
+              })}
             </>
           )}
         </>

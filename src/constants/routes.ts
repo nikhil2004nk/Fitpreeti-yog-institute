@@ -23,5 +23,7 @@ export const ROUTES = {
   CUSTOMER_PROFILE: '/customer/profile',
   CUSTOMER_ATTENDANCE: '/customer/attendance',
   // Trainer Management Routes
-  TRAINER_ATTENDANCE: '/trainer/attendance'
+  TRAINER_ATTENDANCE: '/trainer/attendance',
+  TRAINER_SCHEDULE: '/trainer/schedule',
+  TRAINER_PROFILE: '/trainer/profile'
 } as const;
