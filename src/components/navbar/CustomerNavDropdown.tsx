@@ -31,6 +31,7 @@ export const CustomerNavDropdown: React.FC<CustomerNavDropdownProps> = ({ isScro
   const menuItems = [
     { to: ROUTES.DASHBOARD, label: 'Dashboard', icon: User },
     { to: ROUTES.CUSTOMER_BOOKINGS, label: 'My Bookings', icon: Calendar },
+    { to: ROUTES.CUSTOMER_ATTENDANCE, label: 'My Attendance', icon: Calendar },
     { to: ROUTES.CUSTOMER_PROFILE, label: 'My Profile', icon: User },
     { to: ROUTES.BOOKING, label: 'Book a Class', icon: BookOpen },
   ];

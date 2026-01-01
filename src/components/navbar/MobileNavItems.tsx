@@ -1,5 +1,5 @@
 import { NavLink } from 'react-router-dom';
-import { LogOut, User, Shield, Users, UserCheck, Package, Star, Calendar, BookOpen, FileText } from 'lucide-react';
+import { LogOut, User, Shield, Users, UserCheck, Package, Star, Calendar, BookOpen, FileText, CalendarCheck } from 'lucide-react';
 import { ROUTES } from '../../constants/routes';
 import type { User as UserType } from '../../types';
 import { BookNowButton } from './BookNowButton';
@@ -55,6 +55,7 @@ export const MobileNavItems: React.FC<MobileNavItemsProps> = ({
   // Customer menu items
   const customerMenuItems = [
     { to: ROUTES.CUSTOMER_BOOKINGS, label: 'My Bookings', icon: Calendar },
+    { to: ROUTES.CUSTOMER_ATTENDANCE, label: 'My Attendance', icon: CalendarCheck },
     { to: ROUTES.CUSTOMER_PROFILE, label: 'My Profile', icon: User },
     { to: ROUTES.BOOKING, label: 'Book a Class', icon: BookOpen },
   ];
@@ -146,6 +147,34 @@ export const MobileNavItems: React.FC<MobileNavItemsProps> = ({
                   </li>
                 );
               })}
+            </>
+          )}
+          
+          {user.role === 'trainer' && (
+            <>
+              <li className="border-t-2 border-gray-200 mt-2 pt-2">
+                <div className="px-6 py-2 text-xs font-semibold text-gray-500 uppercase tracking-wider">
+                  Trainer Panel
+                </div>
+              </li>
+              <li className="border-b border-gray-100 last:border-0">
+                <NavLink
+                  to={ROUTES.TRAINER_ATTENDANCE}
+                  onClick={() => handleNavClick(ROUTES.TRAINER_ATTENDANCE)}
+                  className={({ isActive }) =>
+                    `block py-3 px-6 pl-12 font-medium transition-colors text-sm ${
+                      isActive 
+                        ? 'text-red-600 bg-red-50 font-semibold' 
+                        : 'text-gray-700 hover:bg-gray-50 hover:text-red-600'
+                    }`
+                  }
+                >
+                  <div className="flex items-center space-x-3">
+                    <CalendarCheck className="h-4 w-4" />
+                    <span>My Attendance</span>
+                  </div>
+                </NavLink>
+              </li>
             </>
           )}
         </>

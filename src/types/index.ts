@@ -61,3 +61,37 @@ export interface LoginData {
   phone: string;
   pin: string;
 }
+
+export interface Attendance {
+  id: string;
+  user_id: string;
+  user_name?: string;
+  user_role?: 'customer' | 'admin' | 'trainer';
+  date: string;
+  status: 'present' | 'absent';
+  marked_by?: string; // User ID who marked the attendance
+  marked_by_name?: string;
+  notes?: string;
+  created_at?: string;
+  updated_at?: string;
+}
+
+export interface CreateAttendanceData {
+  user_id: string;
+  date: string;
+  status: 'present' | 'absent';
+  notes?: string;
+}
+
+export interface UpdateAttendanceData {
+  status?: 'present' | 'absent';
+  notes?: string;
+}
+
+export interface AttendanceFilter {
+  user_id?: string;
+  user_role?: 'customer' | 'admin' | 'trainer';
+  start_date?: string;
+  end_date?: string;
+  status?: 'present' | 'absent';
+}

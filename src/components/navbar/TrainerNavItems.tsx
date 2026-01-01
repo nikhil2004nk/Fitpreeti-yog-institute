@@ -1,5 +1,5 @@
 import { NavLink } from 'react-router-dom';
-import { Calendar } from 'lucide-react';
+import { Calendar, CalendarCheck } from 'lucide-react';
 import { ROUTES } from '../../constants/routes';
 
 interface TrainerNavItemsProps {
@@ -41,6 +41,22 @@ export const TrainerNavItems: React.FC<TrainerNavItemsProps> = ({ isScrolled, on
         >
           <Calendar className="h-4 w-4 flex-shrink-0" />
           <span>Dashboard</span>
+        </NavLink>
+      </li>
+      <li>
+        <NavLink
+          to={ROUTES.TRAINER_ATTENDANCE}
+          className={({ isActive }) => 
+            `${navItemClass} ${
+              isActive 
+                ? isScrolled ? 'bg-red-50 text-red-600' : 'bg-red-600/20 text-red-400'
+                : ''
+            }`
+          }
+          onClick={handleClick}
+        >
+          <CalendarCheck className="h-4 w-4 flex-shrink-0" />
+          <span>Attendance</span>
         </NavLink>
       </li>
       {/* Future: Add more trainer-specific menu items here */}

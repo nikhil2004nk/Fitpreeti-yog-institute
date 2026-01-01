@@ -343,7 +343,7 @@ export const ClassScheduleManagement: React.FC = () => {
               <p className="text-gray-600">No class schedules found</p>
             </div>
           ) : (
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 max-h-[600px] overflow-y-auto pr-2">
               {filteredSchedules.map((schedule) => {
                 const startDateTime = formatDateTime(schedule.start_time);
                 const endDateTime = formatDateTime(schedule.end_time);

@@ -224,23 +224,23 @@ export const BookingManagement: React.FC = () => {
             </div>
           ) : (
             <div className="bg-white rounded-xl shadow-lg overflow-hidden">
-              <div className="overflow-x-auto">
+              <div className="overflow-x-auto max-h-[600px] overflow-y-auto">
                 <table className="min-w-full divide-y divide-gray-200">
-                  <thead className="bg-gray-50">
+                  <thead className="bg-gray-50 sticky top-0 z-10">
                     <tr>
-                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      <th className="px-4 sm:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                         Customer
                       </th>
-                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      <th className="px-4 sm:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider hidden md:table-cell">
                         Booking Date & Time
                       </th>
-                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      <th className="px-4 sm:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                         Status
                       </th>
-                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      <th className="px-4 sm:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider hidden lg:table-cell">
                         Created
                       </th>
-                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      <th className="px-4 sm:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                         Actions
                       </th>
                     </tr>
@@ -248,25 +248,25 @@ export const BookingManagement: React.FC = () => {
                   <tbody className="bg-white divide-y divide-gray-200">
                     {filteredBookings.map((booking) => (
                       <tr key={booking.id} className="hover:bg-gray-50">
-                        <td className="px-6 py-4 whitespace-nowrap">
+                        <td className="px-4 sm:px-6 py-4 whitespace-nowrap">
                           <div className="flex items-center">
-                            <div className="flex-shrink-0 h-10 w-10 bg-red-100 rounded-full flex items-center justify-center">
-                              <User className="h-5 w-5 text-red-600" />
+                            <div className="flex-shrink-0 h-8 w-8 sm:h-10 sm:w-10 bg-red-100 rounded-full flex items-center justify-center">
+                              <User className="h-4 w-4 sm:h-5 sm:w-5 text-red-600" />
                             </div>
-                            <div className="ml-4">
+                            <div className="ml-2 sm:ml-4">
                               <div className="text-sm font-medium text-gray-900">{booking.full_name}</div>
-                              <div className="text-sm text-gray-500 flex items-center space-x-2 mt-1">
+                              <div className="text-xs sm:text-sm text-gray-500 flex items-center space-x-2 mt-1">
                                 <Mail className="h-3 w-3" />
-                                <span>{booking.email}</span>
+                                <span className="truncate max-w-xs">{booking.email}</span>
                               </div>
-                              <div className="text-sm text-gray-500 flex items-center space-x-2">
+                              <div className="text-xs sm:text-sm text-gray-500 flex items-center space-x-2">
                                 <Phone className="h-3 w-3" />
                                 <span>{booking.phone}</span>
                               </div>
                             </div>
                           </div>
                         </td>
-                        <td className="px-6 py-4 whitespace-nowrap">
+                        <td className="px-4 sm:px-6 py-4 whitespace-nowrap hidden md:table-cell">
                           <div className="text-sm text-gray-900 flex items-center space-x-2">
                             <Calendar className="h-4 w-4 text-gray-400" />
                             <span>{formatDate(booking.booking_date)}</span>
@@ -276,15 +276,15 @@ export const BookingManagement: React.FC = () => {
                             <span>{booking.booking_time}</span>
                           </div>
                         </td>
-                        <td className="px-6 py-4 whitespace-nowrap">
+                        <td className="px-4 sm:px-6 py-4 whitespace-nowrap">
                           <span className={`px-2 py-1 inline-flex text-xs leading-5 font-semibold rounded-full ${getStatusColor(booking.status)}`}>
                             {booking.status}
                           </span>
                         </td>
-                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                        <td className="px-4 sm:px-6 py-4 whitespace-nowrap text-sm text-gray-500 hidden lg:table-cell">
                           {formatDate(booking.created_at)}
                         </td>
-                        <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                        <td className="px-4 sm:px-6 py-4 whitespace-nowrap text-sm font-medium">
                           <div className="flex space-x-2">
                             <select
                               value={booking.status}

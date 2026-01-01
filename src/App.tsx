@@ -18,9 +18,13 @@ import { ReviewManagement } from './pages/admin/ReviewManagement';
 import { ClassScheduleManagement } from './pages/admin/ClassScheduleManagement';
 import { BookingManagement } from './pages/admin/BookingManagement';
 import { CMSManagement } from './pages/admin/CMSManagement';
+import { AttendanceManagement } from './pages/admin/AttendanceManagement';
 // Customer Management Pages
 import { MyBookings } from './pages/customer/MyBookings';
 import { MyProfile } from './pages/customer/MyProfile';
+import { CustomerAttendance } from './pages/customer/CustomerAttendance';
+// Trainer Management Pages
+import { TrainerAttendance } from './pages/trainer/TrainerAttendance';
 
 const App: React.FC = () => {
   return (
@@ -99,6 +103,14 @@ const App: React.FC = () => {
           </ProtectedRoute>
         } 
       />
+      <Route 
+        path="/admin/attendance" 
+        element={
+          <ProtectedRoute requiredRole="admin">
+            <AttendanceManagement />
+          </ProtectedRoute>
+        } 
+      />
       {/* Customer Management Routes */}
       <Route 
         path="/customer/bookings" 
@@ -113,6 +125,23 @@ const App: React.FC = () => {
         element={
           <ProtectedRoute requiredRole="customer">
             <MyProfile />
+          </ProtectedRoute>
+        } 
+      />
+      <Route 
+        path="/customer/attendance" 
+        element={
+          <ProtectedRoute requiredRole="customer">
+            <CustomerAttendance />
+          </ProtectedRoute>
+        } 
+      />
+      {/* Trainer Management Routes */}
+      <Route 
+        path="/trainer/attendance" 
+        element={
+          <ProtectedRoute requiredRole="trainer">
+            <TrainerAttendance />
           </ProtectedRoute>
         } 
       />

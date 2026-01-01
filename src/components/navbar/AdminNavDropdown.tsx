@@ -36,6 +36,7 @@ export const AdminNavDropdown: React.FC<AdminNavDropdownProps> = ({ isScrolled }
     { to: ROUTES.ADMIN_REVIEWS, label: 'Review Management', icon: Star },
     { to: ROUTES.ADMIN_CLASS_SCHEDULES, label: 'Class Schedule Management', icon: Calendar },
     { to: ROUTES.ADMIN_BOOKINGS, label: 'Booking Management', icon: BookOpen },
+    { to: ROUTES.ADMIN_ATTENDANCE, label: 'Attendance Management', icon: Calendar },
     { to: ROUTES.ADMIN_CMS, label: 'CMS Management', icon: FileText },
   ];
 

@@ -321,7 +321,7 @@ export const ReviewManagement: React.FC = () => {
               <p className="text-gray-600">No reviews found</p>
             </div>
           ) : (
-            <div className="space-y-4">
+            <div className="space-y-4 max-h-[600px] overflow-y-auto pr-2">
               {filteredReviews.map((review) => (
                 <div
                   key={review.id}
