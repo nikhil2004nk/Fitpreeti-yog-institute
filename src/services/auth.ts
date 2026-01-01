@@ -1,4 +1,4 @@
-import { apiRequest, apiRequestWithRefresh, type ApiResponse } from './api';
+import { apiRequest, apiRequestWithRefresh, resetRefreshFailed, type ApiResponse } from './api';
 import type { User, RegisterData } from '../types';
 
 export interface AuthResponse {
@@ -19,10 +19,34 @@ class AuthService {
   }
 
   async login(phone: string, pin: string): Promise<ApiResponse<AuthResponse>> {
-    return apiRequest<AuthResponse>('/auth/login', {
-      method: 'POST',
-      body: JSON.stringify({ phone, pin }),
-    });
+    try {
+      if (import.meta.env.DEV) {
+        console.log('🔐 Attempting login:', { phone: phone.replace(/\d(?=\d{4})/g, '*'), pinLength: pin.length });
+      }
+      
+      const response = await apiRequest<AuthResponse>('/auth/login', {
+        method: 'POST',
+        body: JSON.stringify({ phone, pin }),
+      });
+      
+      // Reset refresh failed flag after successful login
+      resetRefreshFailed();
+      
+      if (import.meta.env.DEV) {
+        console.log('✅ Login successful');
+      }
+      
+      return response;
+    } catch (error: any) {
+      if (import.meta.env.DEV) {
+        console.error('❌ Login failed:', {
+          statusCode: error?.statusCode,
+          message: error?.message,
+          error: error?.data,
+        });
+      }
+      throw error;
+    }
   }
 
   async logout(): Promise<ApiResponse<{ message: string }>> {

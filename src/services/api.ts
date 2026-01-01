@@ -1,16 +1,6 @@
 // API base configuration and utilities
-// In development, use relative path which will be proxied by Vite to avoid CORS
-// In production, use the full URL from environment variable
-const API_BASE_URL = import.meta.env.DEV
-  ? '/api/v1' // Use proxy in development
-  : (import.meta.env.VITE_API_BASE_URL || 'https://fitpreeti-yog-backend.vercel.app/api/v1');
-
-// Debug: Log the API base URL being used (remove in production)
-if (import.meta.env.DEV) {
-  console.log('API Base URL:', API_BASE_URL);
-  console.log('Mode:', import.meta.env.MODE);
-  console.log('Using Vite proxy for CORS:', import.meta.env.DEV);
-}
+// Import from single source of truth
+import { API_BASE_URL } from '../config/api';
 
 export interface ApiResponse<T = any> {
   success?: boolean;
@@ -58,21 +48,72 @@ export const apiRequest = async <T = any>(
     },
   };
 
-  try {
-    const response = await fetch(url, {
-      ...defaultOptions,
-      ...options,
-      headers: {
-        ...defaultOptions.headers,
-        ...options.headers,
-      },
-    });
+  // Log request details in development
+  if (import.meta.env.DEV && retryCount === 0) {
+    const logData: any = {
+      method: options.method || 'GET',
+      url,
+      credentials: 'include',
+      hasBody: !!options.body,
+    };
+    
+    // Log request body (sanitized for sensitive endpoints)
+    if (options.body && typeof options.body === 'string') {
+      try {
+        const bodyObj = JSON.parse(options.body);
+        if (endpoint.includes('/auth/login') || endpoint.includes('/auth/register')) {
+          // Sanitize sensitive data
+          logData.body = {
+            ...bodyObj,
+            pin: bodyObj.pin ? '*'.repeat(bodyObj.pin.length) : undefined,
+            password: bodyObj.password ? '*'.repeat(bodyObj.password.length) : undefined,
+          };
+        } else {
+          logData.body = bodyObj;
+        }
+      } catch {
+        logData.body = '[non-JSON body]';
+      }
+    }
+    
+    console.log(`📡 API Request:`, logData);
+  }
 
-    // Handle non-JSON responses (e.g., CORS errors)
-    let data: ApiResponse<T>;
-    const contentType = response.headers.get('content-type');
+    try {
+      const response = await fetch(url, {
+        ...defaultOptions,
+        ...options,
+        headers: {
+          ...defaultOptions.headers,
+          ...options.headers,
+        },
+      });
+
+      // Log response details in development
+      if (import.meta.env.DEV && retryCount === 0) {
+        console.log(`📥 API Response: ${options.method || 'GET'} ${url}`, {
+          status: response.status,
+          statusText: response.statusText,
+          ok: response.ok,
+          contentType: response.headers.get('content-type'),
+        });
+      }
+
+      // Handle non-JSON responses (e.g., CORS errors)
+      let data: ApiResponse<T>;
+      const contentType = response.headers.get('content-type');
     if (contentType && contentType.includes('application/json')) {
-      data = await response.json();
+      try {
+        data = await response.json();
+      } catch (parseError) {
+        // If JSON parsing fails, read as text
+        const text = await response.text();
+        throw new ApiError(
+          `Invalid JSON response from server: ${text || response.statusText}`,
+          response.status,
+          { error: text || response.statusText, statusCode: response.status }
+        );
+      }
     } else {
       // If response is not JSON, create a generic error response
       const text = await response.text();
@@ -100,9 +141,28 @@ export const apiRequest = async <T = any>(
     }
 
     if (!response.ok) {
+      // Enhanced error logging for development
+      // Skip logging 401 errors for /auth/profile (expected when not logged in)
+      const isExpected401 = response.status === 401 && endpoint.includes('/auth/profile');
+      
+      if (import.meta.env.DEV && !isExpected401) {
+        console.error(`❌ API Error [${response.status}]:`, {
+          endpoint,
+          url,
+          status: response.status,
+          statusText: response.statusText,
+        });
+        // Log error data separately for better readability
+        console.error('Error Response Data:', data);
+        // Log response headers if needed
+        if (response.status >= 500) {
+          console.error('Response Headers:', Object.fromEntries(response.headers.entries()));
+        }
+      }
+      
       const errorMessage = Array.isArray(data.message) 
         ? data.message.join(', ') 
-        : data.message || 'Request failed';
+        : data.message || data.error || `Request failed with status ${response.status}`;
       throw new ApiError(errorMessage, response.status, data);
     }
 
@@ -132,9 +192,15 @@ export const apiRequest = async <T = any>(
 // Track if we're currently refreshing to prevent multiple simultaneous refresh attempts
 let isRefreshing = false;
 let refreshPromise: Promise<void> | null = null;
+let refreshFailed = false; // Track if refresh has permanently failed (400 = no token)
 
 // Token refresh helper
 const refreshAccessToken = async (): Promise<void> => {
+  // If refresh already failed (400 = no refresh token), don't try again
+  if (refreshFailed) {
+    throw new ApiError('No refresh token available', 400, { error: 'No refresh token' });
+  }
+
   // If already refreshing, wait for the existing refresh to complete
   if (isRefreshing && refreshPromise) {
     return refreshPromise;
@@ -147,8 +213,14 @@ const refreshAccessToken = async (): Promise<void> => {
         method: 'POST',
       }, 0); // No retries for refresh token
     } catch (error) {
-      // Refresh failed - clear the promise so we can try again
-      refreshPromise = null;
+      // If refresh failed with 400 (no refresh token), mark as permanently failed
+      if (error instanceof ApiError && error.statusCode === 400) {
+        refreshFailed = true;
+      }
+      // Clear the promise so we can try again (unless it's 400)
+      if (!refreshFailed) {
+        refreshPromise = null;
+      }
       throw error;
     } finally {
       isRefreshing = false;
@@ -172,11 +244,13 @@ export const apiRequestWithRefresh = async <T = any>(
   } catch (error) {
     // Step 2: If we get a 401, try to refresh the token
     // Don't attempt refresh for the refresh endpoint itself or login/register
+    // Also skip if refresh has already failed (400 = no refresh token)
     if (error instanceof ApiError && 
         error.statusCode === 401 && 
         !endpoint.includes('/auth/refresh') &&
         !endpoint.includes('/auth/login') &&
-        !endpoint.includes('/auth/register')) {
+        !endpoint.includes('/auth/register') &&
+        !refreshFailed) {
       
       try {
         // Step 3: Attempt to refresh the access token using refresh_token cookie
@@ -192,10 +266,15 @@ export const apiRequestWithRefresh = async <T = any>(
           // 429 = Rate limited (don't redirect)
           // 0 = Network error (don't redirect)
           
-          // Only redirect on actual auth failures (401/403), not on missing tokens (400) or network errors
+          // For 400 (no refresh token), just fail silently - user is not authenticated
+          if (refreshError.statusCode === 400) {
+            // Don't retry, just throw the original 401 error
+            throw error;
+          }
+          
+          // Only redirect on actual auth failures (401/403), not on network errors
           if (refreshError.statusCode !== 429 && 
               refreshError.statusCode !== 0 &&
-              refreshError.statusCode !== 400 &&
               (refreshError.statusCode === 401 || refreshError.statusCode === 403)) {
             // User had a session but refresh token is invalid - redirect to login
             if (typeof window !== 'undefined') {
@@ -211,5 +290,11 @@ export const apiRequestWithRefresh = async <T = any>(
     // For non-401 errors, just re-throw
     throw error;
   }
+};
+
+// Reset refresh failed flag (call this after successful login)
+export const resetRefreshFailed = () => {
+  refreshFailed = false;
+  refreshPromise = null;
 };
 
