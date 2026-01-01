@@ -178,16 +178,27 @@ export const Navbar: React.FC = () => {
 
           {/* Mobile menu button */}
           <button
-            className={`lg:hidden p-2 rounded-xl transition-all duration-300 ${
+            type="button"
+            className={`lg:hidden relative z-[10001] p-2.5 rounded-xl transition-all duration-300 touch-manipulation active:scale-95 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2 ${
               isScrolled 
-                ? 'text-neutral-900 hover:bg-neutral-100' 
-                : 'text-white hover:bg-neutral-800'
-            }`}
-            onClick={() => setIsOpen(!isOpen)}
-            aria-label="Toggle menu"
+                ? 'text-neutral-900 hover:bg-neutral-100 active:bg-neutral-200' 
+                : 'text-white hover:bg-neutral-800 active:bg-neutral-700'
+            } ${isOpen ? 'bg-neutral-800/20' : ''}`}
+            onClick={(e) => {
+              e.stopPropagation();
+              setIsOpen(!isOpen);
+            }}
+            onTouchStart={(e) => {
+              e.stopPropagation();
+            }}
+            aria-label={isOpen ? 'Close menu' : 'Open menu'}
             aria-expanded={isOpen}
           >
-            {isOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
+            {isOpen ? (
+              <X className="h-6 w-6 transition-transform duration-300 rotate-0" />
+            ) : (
+              <Menu className="h-6 w-6 transition-transform duration-300" />
+            )}
           </button>
         </div>
 
@@ -196,17 +207,23 @@ export const Navbar: React.FC = () => {
           <>
             {/* Overlay - below header */}
             <div 
-              className="fixed top-16 sm:top-20 left-0 right-0 bottom-0 lg:hidden bg-black/50 backdrop-blur-sm transition-opacity duration-300 z-[9998]"
+              className="mobile-menu-overlay fixed inset-0 top-16 sm:top-20 lg:hidden bg-black/50 backdrop-blur-sm z-[9998]"
               onClick={() => setIsOpen(false)}
+              onTouchStart={() => setIsOpen(false)}
+              aria-hidden="true"
             />
             
             {/* Menu Panel - below header */}
             <div 
-              className="fixed top-16 sm:top-20 left-0 right-0 bottom-0 lg:hidden bg-white shadow-2xl overflow-y-auto z-[9999]"
+              className="mobile-menu-panel fixed top-16 sm:top-20 left-0 right-0 bottom-0 lg:hidden bg-white shadow-2xl z-[9999] flex flex-col"
               onClick={(e) => e.stopPropagation()}
+              onTouchStart={(e) => e.stopPropagation()}
+              role="dialog"
+              aria-modal="true"
+              aria-label="Navigation menu"
             >
-              <div className="h-full overflow-y-auto">
-                <ul className="flex flex-col py-2">
+              <div className="flex-1 overflow-y-auto overscroll-contain -webkit-overflow-scrolling-touch">
+                <ul className="flex flex-col min-h-full">
                   <MobileNavItems
                     isAuthenticated={isAuthenticated}
                     user={user}

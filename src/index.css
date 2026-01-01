@@ -322,3 +322,32 @@
     border: 1.5px solid #F5F5F5;
   }
 }
+
+/* Mobile Menu Animations */
+@keyframes slideDown {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+.mobile-menu-overlay {
+  animation: fadeIn 0.2s ease-out;
+}
+
+.mobile-menu-panel {
+  animation: slideDown 0.3s ease-out;
+}
