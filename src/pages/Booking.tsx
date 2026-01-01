@@ -24,6 +24,7 @@ export const Booking: React.FC = () => {
   const [showSuccessModal, setShowSuccessModal] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState<string>('');
+  const [showAllServices, setShowAllServices] = useState(false);
   
   // Form data
   const [formData, setFormData] = useState({
@@ -349,7 +350,7 @@ export const Booking: React.FC = () => {
 
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
             {/* Service Selection */}
-            <div className="space-y-6">
+            <div className="space-y-6 mb-8 lg:mb-0">
               <h2 className="text-3xl font-bold text-slate-900 mb-8">Select Service</h2>
               {services.length === 0 ? (
                 <div className="text-center py-12">
@@ -357,8 +358,9 @@ export const Booking: React.FC = () => {
                   <p className="mt-4 text-gray-600">Loading services...</p>
                 </div>
               ) : (
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  {services.map((service) => (
+                <>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-8 lg:mb-0">
+                    {(showAllServices ? services : services.slice(0, 4)).map((service) => (
                     <button
                       key={service.id}
                       onClick={() => {
@@ -405,8 +407,17 @@ export const Booking: React.FC = () => {
                         </span>
                       </div>
                     </button>
-                  ))}
-                </div>
+                    ))}
+                  </div>
+                  {services.length > 4 && (
+                    <button
+                      onClick={() => setShowAllServices(!showAllServices)}
+                      className="w-full py-3 px-4 bg-gradient-to-r from-emerald-600 to-emerald-500 text-white font-semibold rounded-xl hover:from-emerald-700 hover:to-emerald-600 transition-all duration-300 shadow-lg hover:shadow-xl mb-8 lg:mb-0"
+                    >
+                      {showAllServices ? 'Show Less' : `Show All (${services.length} services)`}
+                    </button>
+                  )}
+                </>
               )}
             </div>
 
