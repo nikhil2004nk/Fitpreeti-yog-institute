@@ -99,7 +99,7 @@ export const HeroSection: React.FC<HeroProps> = ({ onBookNow }) => {
             {subtitle}
           </p>
 
-          <div className="flex flex-col sm:flex-row gap-6 justify-center items-center mb-16">
+          <div className="flex flex-col sm:flex-row gap-6 justify-center items-center mb-12 md:mb-16">
             {ctaPrimary && (
               <Button
                 variant="accent"
@@ -125,7 +125,7 @@ export const HeroSection: React.FC<HeroProps> = ({ onBookNow }) => {
 
           {/* SERVICES ICON GRID */}
           {services.length > 0 && (
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-4 max-w-4xl mx-auto">
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-4 max-w-4xl mx-auto mt-8 md:mt-0">
               {services.map((service, index) => (
                 <motion.div
                   key={service.id}

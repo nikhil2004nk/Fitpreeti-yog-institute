@@ -312,9 +312,9 @@ export const Booking: React.FC = () => {
     <>
       <Navbar />
       
-      <section id="book" className="py-32 bg-gradient-to-br from-emerald-900/10 via-white to-emerald-500/10 min-h-screen">
+      <section id="book" className="py-16 md:py-32 bg-gradient-to-br from-emerald-900/10 via-white to-emerald-500/10 min-h-screen">
         <div className="container mx-auto px-6 lg:px-12 max-w-4xl">
-          <div className="text-center mb-20">
+          <div className="text-center mb-12 md:mb-20">
             <h1 className="text-5xl md:text-7xl font-bold bg-gradient-to-r from-emerald-900 to-emerald-500 bg-clip-text text-transparent mb-6">
               Book Your Class
             </h1>
@@ -348,9 +348,9 @@ export const Booking: React.FC = () => {
             </div>
           )}
 
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-12">
             {/* Service Selection */}
-            <div className="space-y-6 mb-8 lg:mb-0">
+            <div className="space-y-6 mt-8 md:mt-0 mb-12 lg:mb-0">
               <h2 className="text-3xl font-bold text-slate-900 mb-8">Select Service</h2>
               {services.length === 0 ? (
                 <div className="text-center py-12">
@@ -358,8 +358,8 @@ export const Booking: React.FC = () => {
                   <p className="mt-4 text-gray-600">Loading services...</p>
                 </div>
               ) : (
-                <>
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-8 lg:mb-0">
+                <div className="space-y-4">
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     {(showAllServices ? services : services.slice(0, 4)).map((service) => (
                     <button
                       key={service.id}
@@ -412,12 +412,12 @@ export const Booking: React.FC = () => {
                   {services.length > 4 && (
                     <button
                       onClick={() => setShowAllServices(!showAllServices)}
-                      className="w-full py-3 px-4 bg-gradient-to-r from-emerald-600 to-emerald-500 text-white font-semibold rounded-xl hover:from-emerald-700 hover:to-emerald-600 transition-all duration-300 shadow-lg hover:shadow-xl mb-8 lg:mb-0"
+                      className="w-full py-3 px-4 mt-4 bg-gradient-to-r from-emerald-600 to-emerald-500 text-white font-semibold rounded-xl hover:from-emerald-700 hover:to-emerald-600 transition-all duration-300 shadow-lg hover:shadow-xl"
                     >
                       {showAllServices ? 'Show Less' : `Show All (${services.length} services)`}
                     </button>
                   )}
-                </>
+                </div>
               )}
             </div>
 
