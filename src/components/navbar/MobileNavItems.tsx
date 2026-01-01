@@ -1,5 +1,5 @@
 import { NavLink } from 'react-router-dom';
-import { LogOut, User, Shield, Users, UserCheck, Package, Star, Calendar, BookOpen, FileText, CalendarCheck } from 'lucide-react';
+import { LogOut, User, Users, UserCheck, Package, Star, Calendar, BookOpen, FileText, CalendarCheck } from 'lucide-react';
 import { ROUTES } from '../../constants/routes';
 import type { User as UserType } from '../../types';
 import { BookNowButton } from './BookNowButton';
@@ -49,6 +49,7 @@ export const MobileNavItems: React.FC<MobileNavItemsProps> = ({
     { to: ROUTES.ADMIN_REVIEWS, label: 'Review Management', icon: Star },
     { to: ROUTES.ADMIN_CLASS_SCHEDULES, label: 'Class Schedule', icon: Calendar },
     { to: ROUTES.ADMIN_BOOKINGS, label: 'Booking Management', icon: BookOpen },
+    { to: ROUTES.ADMIN_ATTENDANCE, label: 'Attendance Management', icon: CalendarCheck },
     { to: ROUTES.ADMIN_CMS, label: 'CMS Management', icon: FileText },
   ];
 
@@ -69,7 +70,7 @@ export const MobileNavItems: React.FC<MobileNavItemsProps> = ({
             end={item.end}
             onClick={() => handleNavClick(item.to)}
             className={({ isActive }) =>
-              `block py-4 px-6 font-medium transition-colors text-base ${
+              `block py-3 sm:py-4 px-4 sm:px-6 font-medium transition-colors text-sm sm:text-base ${
                 isActive 
                   ? 'text-red-600 bg-red-50 font-semibold' 
                   : 'text-gray-800 hover:bg-gray-50 hover:text-red-600'
@@ -87,7 +88,7 @@ export const MobileNavItems: React.FC<MobileNavItemsProps> = ({
           {user.role === 'admin' && (
             <>
               <li className="border-t-2 border-gray-200 mt-2 pt-2">
-                <div className="px-6 py-2 text-xs font-semibold text-gray-500 uppercase tracking-wider">
+                <div className="px-4 sm:px-6 py-2 text-xs font-semibold text-gray-500 uppercase tracking-wider">
                   Admin Panel
                 </div>
               </li>
@@ -99,16 +100,16 @@ export const MobileNavItems: React.FC<MobileNavItemsProps> = ({
                       to={item.to}
                       onClick={() => handleNavClick(item.to)}
                       className={({ isActive }) =>
-                        `block py-3 px-6 pl-12 font-medium transition-colors text-sm ${
+                        `block py-3 px-4 sm:px-6 pl-10 sm:pl-12 font-medium transition-colors text-sm ${
                           isActive 
                             ? 'text-red-600 bg-red-50 font-semibold' 
                             : 'text-gray-700 hover:bg-gray-50 hover:text-red-600'
                         }`
                       }
                     >
-                      <div className="flex items-center space-x-3">
-                        <Icon className="h-4 w-4" />
-                        <span>{item.label}</span>
+                      <div className="flex items-center space-x-2 sm:space-x-3">
+                        <Icon className="h-4 w-4 flex-shrink-0" />
+                        <span className="truncate">{item.label}</span>
                       </div>
                     </NavLink>
                   </li>
@@ -120,7 +121,7 @@ export const MobileNavItems: React.FC<MobileNavItemsProps> = ({
           {user.role === 'customer' && (
             <>
               <li className="border-t-2 border-gray-200 mt-2 pt-2">
-                <div className="px-6 py-2 text-xs font-semibold text-gray-500 uppercase tracking-wider">
+                <div className="px-4 sm:px-6 py-2 text-xs font-semibold text-gray-500 uppercase tracking-wider">
                   My Account
                 </div>
               </li>
@@ -132,16 +133,16 @@ export const MobileNavItems: React.FC<MobileNavItemsProps> = ({
                       to={item.to}
                       onClick={() => handleNavClick(item.to)}
                       className={({ isActive }) =>
-                        `block py-3 px-6 pl-12 font-medium transition-colors text-sm ${
+                        `block py-3 px-4 sm:px-6 pl-10 sm:pl-12 font-medium transition-colors text-sm ${
                           isActive 
                             ? 'text-red-600 bg-red-50 font-semibold' 
                             : 'text-gray-700 hover:bg-gray-50 hover:text-red-600'
                         }`
                       }
                     >
-                      <div className="flex items-center space-x-3">
-                        <Icon className="h-4 w-4" />
-                        <span>{item.label}</span>
+                      <div className="flex items-center space-x-2 sm:space-x-3">
+                        <Icon className="h-4 w-4 flex-shrink-0" />
+                        <span className="truncate">{item.label}</span>
                       </div>
                     </NavLink>
                   </li>
@@ -153,7 +154,7 @@ export const MobileNavItems: React.FC<MobileNavItemsProps> = ({
           {user.role === 'trainer' && (
             <>
               <li className="border-t-2 border-gray-200 mt-2 pt-2">
-                <div className="px-6 py-2 text-xs font-semibold text-gray-500 uppercase tracking-wider">
+                <div className="px-4 sm:px-6 py-2 text-xs font-semibold text-gray-500 uppercase tracking-wider">
                   Trainer Panel
                 </div>
               </li>
@@ -162,16 +163,16 @@ export const MobileNavItems: React.FC<MobileNavItemsProps> = ({
                   to={ROUTES.TRAINER_ATTENDANCE}
                   onClick={() => handleNavClick(ROUTES.TRAINER_ATTENDANCE)}
                   className={({ isActive }) =>
-                    `block py-3 px-6 pl-12 font-medium transition-colors text-sm ${
+                    `block py-3 px-4 sm:px-6 pl-10 sm:pl-12 font-medium transition-colors text-sm ${
                       isActive 
                         ? 'text-red-600 bg-red-50 font-semibold' 
                         : 'text-gray-700 hover:bg-gray-50 hover:text-red-600'
                     }`
                   }
                 >
-                  <div className="flex items-center space-x-3">
-                    <CalendarCheck className="h-4 w-4" />
-                    <span>My Attendance</span>
+                  <div className="flex items-center space-x-2 sm:space-x-3">
+                    <CalendarCheck className="h-4 w-4 flex-shrink-0" />
+                    <span className="truncate">My Attendance</span>
                   </div>
                 </NavLink>
               </li>
@@ -180,10 +181,12 @@ export const MobileNavItems: React.FC<MobileNavItemsProps> = ({
         </>
       )}
 
-      <li className="mt-2 px-4 pb-4 space-y-2 border-t-2 border-gray-200 pt-4">
+      <li className="mt-2 px-4 sm:px-6 pb-4 space-y-2 border-t-2 border-gray-200 pt-4 bg-gray-50">
         {/* Show Book Now button for customers and non-authenticated users */}
         {(!isAuthenticated || user?.role === 'customer') && (
-          <BookNowButton variant="mobile" onNavClick={handleBookNowClick} />
+          <div className="mb-2">
+            <BookNowButton variant="mobile" onNavClick={handleBookNowClick} />
+          </div>
         )}
         
         {isAuthenticated ? (
@@ -191,26 +194,27 @@ export const MobileNavItems: React.FC<MobileNavItemsProps> = ({
             <NavLink
               to={ROUTES.DASHBOARD}
               onClick={() => handleNavClick(ROUTES.DASHBOARD)}
-              className="block py-3 px-6 bg-purple-600 text-white font-semibold rounded-xl text-center 
-                         hover:bg-purple-700 hover:shadow-lg transition-all duration-300 mb-2"
+              className="block py-3 px-4 sm:px-6 bg-purple-600 text-white font-semibold rounded-xl text-center 
+                         hover:bg-purple-700 hover:shadow-lg transition-all duration-300 mb-2 text-sm sm:text-base"
             >
               Dashboard
             </NavLink>
             {user?.name && (
-              <div className="py-2 px-6 text-sm text-gray-700 text-center">
-                {user.name}
+              <div className="py-2 px-4 sm:px-6 text-xs sm:text-sm text-gray-700 text-center break-words">
+                <span className="font-medium">{user.name}</span>
                 {user.role && (
-                  <span className="ml-2 text-xs text-gray-500 capitalize">({user.role})</span>
+                  <span className="ml-2 text-gray-500 capitalize">({user.role})</span>
                 )}
               </div>
             )}
             <button
               onClick={handleLogout}
               disabled={isLoggingOut}
-              className="w-full py-3 px-6 bg-gray-600 text-white font-semibold rounded-xl text-center 
-                         hover:bg-gray-700 hover:shadow-lg transition-all duration-300 disabled:opacity-50 flex items-center justify-center space-x-2"
+              className="w-full py-3 px-4 sm:px-6 bg-gray-600 text-white font-semibold rounded-xl text-center 
+                         hover:bg-gray-700 hover:shadow-lg transition-all duration-300 disabled:opacity-50 
+                         flex items-center justify-center space-x-2 text-sm sm:text-base"
             >
-              <LogOut className="h-4 w-4" />
+              <LogOut className="h-4 w-4 flex-shrink-0" />
               <span>Logout</span>
             </button>
           </>
@@ -218,10 +222,11 @@ export const MobileNavItems: React.FC<MobileNavItemsProps> = ({
           <NavLink
             to={ROUTES.LOGIN}
             onClick={() => handleNavClick(ROUTES.LOGIN)}
-            className="block py-3 px-6 bg-gray-600 text-white font-semibold rounded-xl text-center 
-                       hover:bg-gray-700 hover:shadow-lg transition-all duration-300 flex items-center justify-center space-x-2"
+            className="block py-3 px-4 sm:px-6 bg-gray-600 text-white font-semibold rounded-xl text-center 
+                       hover:bg-gray-700 hover:shadow-lg transition-all duration-300 
+                       flex items-center justify-center space-x-2 text-sm sm:text-base"
           >
-            <User className="h-4 w-4" />
+            <User className="h-4 w-4 flex-shrink-0" />
             <span>Login</span>
           </NavLink>
         )}

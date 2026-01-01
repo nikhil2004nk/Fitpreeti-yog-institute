@@ -33,6 +33,18 @@ export const Navbar: React.FC = () => {
     return () => window.removeEventListener('scroll', handleScroll);
   }, [isOpen]);
 
+  // Prevent body scroll when mobile menu is open
+  useEffect(() => {
+    if (isOpen) {
+      document.body.style.overflow = 'hidden';
+    } else {
+      document.body.style.overflow = '';
+    }
+    return () => {
+      document.body.style.overflow = '';
+    };
+  }, [isOpen]);
+
   const handleNavClick = (to: string) => {
     navigate(to);
     setIsOpen(false);
@@ -73,7 +85,7 @@ export const Navbar: React.FC = () => {
 
   return (
     <nav
-      className={`fixed top-0 w-full transition-all duration-500 z-50 ${
+      className={`fixed top-0 w-full transition-all duration-500 z-[10000] ${
         isScrolled 
           ? 'bg-white/95 backdrop-blur-xl shadow-2xl text-neutral-900' 
           : 'bg-neutral-900/90 text-white'
@@ -180,39 +192,33 @@ export const Navbar: React.FC = () => {
         </div>
 
         {/* Mobile Menu */}
-        <div 
-          className={`fixed inset-0 lg:hidden transition-all duration-300 ease-in-out ${
-            isOpen ? 'opacity-100 visible' : 'opacity-0 invisible'
-          }`}
-          style={{ zIndex: 90 }}
-        >
-          {/* Overlay */}
-          <div 
-            className={`fixed inset-0 bg-black/50 transition-opacity duration-300 ${
-              isOpen ? 'opacity-100' : 'opacity-0'
-            }`}
-            onClick={() => setIsOpen(false)}
-            style={{ zIndex: 91 }}
-          />
-          
-          {/* Menu Panel */}
-          <div 
-            className={`relative mt-16 sm:mt-20 bg-white shadow-2xl rounded-b-2xl mx-4 overflow-hidden transition-all duration-300 ease-in-out ${
-              isOpen ? 'translate-y-0 opacity-100' : '-translate-y-4 opacity-0'
-            }`}
-            style={{ zIndex: 95 }}
-          >
-            <ul className="flex flex-col py-2">
-              <MobileNavItems
-                isAuthenticated={isAuthenticated}
-                user={user}
-                onNavClick={handleNavClick}
-                onLogout={handleLogout}
-                isLoggingOut={isLoggingOut}
-              />
-            </ul>
-          </div>
-        </div>
+        {isOpen && (
+          <>
+            {/* Overlay - below header */}
+            <div 
+              className="fixed top-16 sm:top-20 left-0 right-0 bottom-0 lg:hidden bg-black/50 backdrop-blur-sm transition-opacity duration-300 z-[9998]"
+              onClick={() => setIsOpen(false)}
+            />
+            
+            {/* Menu Panel - below header */}
+            <div 
+              className="fixed top-16 sm:top-20 left-0 right-0 bottom-0 lg:hidden bg-white shadow-2xl overflow-y-auto z-[9999]"
+              onClick={(e) => e.stopPropagation()}
+            >
+              <div className="h-full overflow-y-auto">
+                <ul className="flex flex-col py-2">
+                  <MobileNavItems
+                    isAuthenticated={isAuthenticated}
+                    user={user}
+                    onNavClick={handleNavClick}
+                    onLogout={handleLogout}
+                    isLoggingOut={isLoggingOut}
+                  />
+                </ul>
+              </div>
+            </div>
+          </>
+        )}
       </div>
     </nav>
   );
