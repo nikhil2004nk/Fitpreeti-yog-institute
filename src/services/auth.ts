@@ -75,8 +75,13 @@ class AuthService {
       }
       
       return user || null;
-    } catch (error) {
+    } catch (error: any) {
       // Silently fail - user is not authenticated
+      // 401 is expected for unauthenticated users, so we don't log it
+      // Only log unexpected errors in development
+      if (import.meta.env.DEV && error?.statusCode !== 401) {
+        console.debug('getProfileSilent: User not authenticated', error?.statusCode || 'network error');
+      }
       return null;
     }
   }

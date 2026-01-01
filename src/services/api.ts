@@ -150,7 +150,11 @@ export const apiRequestWithRefresh = async <T = any>(
     return await apiRequest<T>(endpoint, options);
   } catch (error) {
     // Only attempt refresh on 401, and don't retry if refresh endpoint itself fails
-    if (error instanceof ApiError && error.statusCode === 401 && !endpoint.includes('/auth/refresh')) {
+    // Also skip refresh if the original error was 400 (bad request - likely no token)
+    if (error instanceof ApiError && 
+        error.statusCode === 401 && 
+        !endpoint.includes('/auth/refresh') &&
+        !endpoint.includes('/auth/profile')) {
       try {
         // Try to refresh token (don't retry on 429/500 for refresh endpoint)
         await apiRequest('/auth/refresh', {
@@ -159,11 +163,12 @@ export const apiRequestWithRefresh = async <T = any>(
         // Retry original request
         return await apiRequest<T>(endpoint, options);
       } catch (refreshError) {
-        // Refresh failed, redirect to login only if it's an actual auth error (401/403)
-        // Don't redirect on network errors (statusCode 0) or rate limits (429)
+        // Refresh failed - don't redirect on 400 (no refresh token) or network errors
+        // Only redirect on actual auth errors (401/403) when user was previously authenticated
         if (refreshError instanceof ApiError && 
             refreshError.statusCode !== 429 && 
             refreshError.statusCode !== 0 &&
+            refreshError.statusCode !== 400 &&
             (refreshError.statusCode === 401 || refreshError.statusCode === 403)) {
           if (typeof window !== 'undefined') {
             // Use base URL for proper routing in GitHub Pages
@@ -171,7 +176,8 @@ export const apiRequestWithRefresh = async <T = any>(
             window.location.href = `${basePath}#/login`;
           }
         }
-        throw refreshError;
+        // Re-throw the original error, not the refresh error
+        throw error;
       }
     }
     throw error;
