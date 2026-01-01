@@ -1,8 +1,9 @@
 import type { Service } from '../services/services';
 import type { Trainer } from '../services/trainers';
+import { getAssetUrl } from '../utils/url';
 
 // Fallback Services Data
-export const fallbackServices: Service[] = [
+const rawFallbackServices = [
   {
     id: 'fallback-1',
     service_name: 'Hatha Yoga Flow',
@@ -70,6 +71,12 @@ export const fallbackServices: Service[] = [
     is_active: true,
   },
 ];
+
+// Process image URLs to include base path
+export const fallbackServices: Service[] = rawFallbackServices.map(service => ({
+  ...service,
+  image_url: getAssetUrl(service.image_url),
+}));
 
 // Fallback Trainers Data
 export const fallbackTrainers: Trainer[] = [

@@ -807,7 +807,13 @@ export const About: React.FC = () => {
       <section className="relative overflow-hidden bg-gradient-to-br from-red-600 via-red-700 to-red-800 py-24 text-white">
         {/* Subtle pattern */}
         <div className="absolute inset-0 bg-[radial-gradient(circle_at_top,rgba(255,255,255,0.12),transparent_55%)]" />
-        <div className="absolute inset-0 bg-[url('/patterns/dots.svg')] opacity-[0.06]" />
+        <div 
+          className="absolute inset-0 opacity-[0.06]" 
+          style={{
+            backgroundImage: `url("data:image/svg+xml,%3Csvg width='20' height='20' xmlns='http://www.w3.org/2000/svg'%3E%3Ccircle cx='10' cy='10' r='1.5' fill='white'/%3E%3C/svg%3E")`,
+            backgroundRepeat: 'repeat'
+          }}
+        />
 
         {/* Glow shapes */}
         <div className="absolute -top-32 -right-32 h-96 w-96 rounded-full bg-white/10 blur-3xl" />

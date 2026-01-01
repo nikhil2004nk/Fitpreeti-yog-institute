@@ -52,9 +52,21 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
     try {
       const response = await authService.login(data.phone, data.pin);
       // Handle nested response structure: response.data.user or response.data.data.user
-      const user = response.data?.data?.user || response.data?.user || (response.user as User | undefined);
+      let user: User | undefined;
+      
+      if (response.data) {
+        // Check nested structure: response.data.data.user
+        if (response.data.data && typeof response.data.data === 'object' && 'user' in response.data.data) {
+          user = response.data.data.user as User | undefined;
+        }
+        // Check direct: response.data.user
+        if (!user && 'user' in response.data) {
+          user = response.data.user as User | undefined;
+        }
+      }
+      
       if (user) {
-        setUser(user as User);
+        setUser(user);
       } else {
         // If user data not in response, fetch profile
         const userData = await authService.getProfile();
