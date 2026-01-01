@@ -23,24 +23,25 @@ const serviceIcons: Record<string, ReactNode> = {
 
 export const HeroSection: React.FC<HeroProps> = ({ onBookNow }) => {
   const [services, setServices] = useState<Service[]>([]);
+  const [showAllServices, setShowAllServices] = useState(false);
   const { section: heroSection } = useContentSection('hero');
 
   useEffect(() => {
     const fetchServices = async () => {
       try {
         const data = await serviceService.getAllServices();
-        // Filter only active services and take first 4
-        const activeServices = data.filter(s => s.is_active).slice(0, 4);
+        // Filter only active services
+        const activeServices = data.filter(s => s.is_active);
         if (activeServices.length > 0) {
           setServices(activeServices);
         } else {
           // Use fallback data if no active services from backend
-          setServices(fallbackServices.slice(0, 4));
+          setServices(fallbackServices);
         }
       } catch (err) {
         console.error('Failed to load services:', err);
         // Use fallback data when backend fails
-        setServices(fallbackServices.slice(0, 4));
+        setServices(fallbackServices);
       }
     };
     fetchServices();
@@ -125,8 +126,9 @@ export const HeroSection: React.FC<HeroProps> = ({ onBookNow }) => {
 
           {/* SERVICES ICON GRID */}
           {services.length > 0 && (
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-4 max-w-4xl mx-auto mt-8 md:mt-0">
-              {services.map((service, index) => (
+            <>
+              <div className="grid grid-cols-2 md:grid-cols-4 gap-4 max-w-4xl mx-auto mt-8 md:mt-0">
+                {(showAllServices ? services : services.slice(0, 4)).map((service, index) => (
                 <motion.div
                   key={service.id}
                   initial={{ opacity: 0, scale: 0.85 }}
@@ -144,8 +146,20 @@ export const HeroSection: React.FC<HeroProps> = ({ onBookNow }) => {
                     {service.service_name}
                   </p>
                 </motion.div>
-              ))}
-            </div>
+                ))}
+              </div>
+              {services.length > 4 && (
+                <motion.button
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: 1.5 }}
+                  onClick={() => setShowAllServices(!showAllServices)}
+                  className="mt-6 mx-auto px-6 py-3 bg-white/10 backdrop-blur-xl border border-white/20 text-white font-semibold rounded-xl hover:bg-white/20 hover:border-primary-500/50 transition-all duration-300"
+                >
+                  {showAllServices ? 'Show Less' : `Show All (${services.length} services)`}
+                </motion.button>
+              )}
+            </>
           )}
         </motion.div>
       </div>
