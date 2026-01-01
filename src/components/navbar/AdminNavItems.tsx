@@ -6,10 +6,6 @@ interface AdminNavItemsProps {
 }
 
 export const AdminNavItems: React.FC<AdminNavItemsProps> = ({ isScrolled }) => {
-  return (
-    <li>
-      <AdminNavDropdown isScrolled={isScrolled} />
-    </li>
-  );
+  return <AdminNavDropdown isScrolled={isScrolled} />;
 };
 

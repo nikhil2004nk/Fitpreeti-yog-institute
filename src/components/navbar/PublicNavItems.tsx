@@ -7,17 +7,17 @@ interface PublicNavItemsProps {
 }
 
 export const PublicNavItems: React.FC<PublicNavItemsProps> = ({ isScrolled, onNavClick }) => {
-  const navLinkBase = 'relative py-3 px-3 text-lg font-semibold transition-all duration-300 group';
+  const navLinkBase = 'relative py-2 px-2 xl:px-3 text-sm xl:text-base 2xl:text-lg font-semibold transition-all duration-300 group whitespace-nowrap';
 
   const getNavClass = ({ isActive }: { isActive: boolean }) =>
     `${navLinkBase} ${
       isActive 
         ? isScrolled
-          ? 'text-red-600 font-semibold relative after:absolute after:bottom-1 after:left-1/2 after:-translate-x-1/2 after:w-6 after:h-0.5 after:bg-red-600 after:rounded-full'
-          : 'text-red-400 font-semibold relative after:absolute after:bottom-1 after:left-1/2 after:-translate-x-1/2 after:w-6 after:h-0.5 after:bg-red-400 after:rounded-full'
+          ? 'text-red-600 font-semibold relative after:absolute after:bottom-0 after:left-1/2 after:-translate-x-1/2 after:w-6 after:h-0.5 after:bg-red-600 after:rounded-full'
+          : 'text-red-400 font-semibold relative after:absolute after:bottom-0 after:left-1/2 after:-translate-x-1/2 after:w-6 after:h-0.5 after:bg-red-400 after:rounded-full'
         : isScrolled
-          ? 'text-gray-700 hover:text-red-600 hover:after:absolute hover:after:bottom-1 hover:after:left-1/2 hover:after:-translate-x-1/2 hover:after:w-3 hover:after:h-0.5 hover:after:bg-gray-400 hover:after:rounded-full'
-          : 'text-white hover:text-red-400 hover:after:absolute hover:after:bottom-1 hover:after:left-1/2 hover:after:-translate-x-1/2 hover:after:w-3 hover:after:h-0.5 hover:after:bg-red-400 hover:after:rounded-full'
+          ? 'text-gray-700 hover:text-red-600 hover:after:absolute hover:after:bottom-0 hover:after:left-1/2 hover:after:-translate-x-1/2 hover:after:w-3 hover:after:h-0.5 hover:after:bg-gray-400 hover:after:rounded-full'
+          : 'text-white hover:text-red-400 hover:after:absolute hover:after:bottom-0 hover:after:left-1/2 hover:after:-translate-x-1/2 hover:after:w-3 hover:after:h-0.5 hover:after:bg-red-400 hover:after:rounded-full'
     }`;
 
   const navItems = [

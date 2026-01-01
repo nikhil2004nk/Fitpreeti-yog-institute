@@ -18,8 +18,8 @@ export const TrainerNavItems: React.FC<TrainerNavItemsProps> = ({ isScrolled, on
     });
   };
 
-  const navItemClass = `px-3 xl:px-4 py-2 xl:py-2.5 font-semibold text-xs xl:text-sm
-                        rounded-xl transition-all duration-300 flex items-center space-x-2
+  const navItemClass = `px-3 xl:px-4 py-2 xl:py-2.5 font-semibold text-xs xl:text-sm 2xl:text-base
+                        rounded-xl transition-all duration-300 flex items-center space-x-2 whitespace-nowrap
                         ${isScrolled 
                           ? 'text-gray-700 hover:bg-gray-100 hover:text-red-600' 
                           : 'text-white hover:bg-white/10 hover:text-red-400'
@@ -39,7 +39,7 @@ export const TrainerNavItems: React.FC<TrainerNavItemsProps> = ({ isScrolled, on
           }
           onClick={handleClick}
         >
-          <Calendar className="h-4 w-4" />
+          <Calendar className="h-4 w-4 flex-shrink-0" />
           <span>Dashboard</span>
         </NavLink>
       </li>

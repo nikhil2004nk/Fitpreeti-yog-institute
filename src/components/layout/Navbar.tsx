@@ -79,8 +79,8 @@ export const Navbar: React.FC = () => {
           : 'bg-neutral-900/90 text-white'
       }`}
     >
-      <div className="container mx-auto px-4 sm:px-6 lg:px-12">
-        <div className="flex h-16 sm:h-20 items-center justify-between">
+      <div className="w-full px-4 sm:px-6 lg:px-8 xl:px-12 2xl:px-16">
+        <div className="flex h-16 sm:h-20 items-center justify-between max-w-[1920px] mx-auto">
           
           {/* Logo */}
           <div className="flex items-center space-x-1 sm:space-x-2 flex-shrink-0 min-w-0">
@@ -108,15 +108,24 @@ export const Navbar: React.FC = () => {
             </Link>
           </div>
 
-          {/* Desktop Nav */}
-          <ul className="hidden lg:flex items-center space-x-4 xl:space-x-8">
-            <PublicNavItems isScrolled={isScrolled} />
+          {/* Desktop Nav - Full Width Layout */}
+          <div className="hidden lg:flex items-center justify-end flex-1 gap-4 xl:gap-6 2xl:gap-8">
+            <ul className="flex items-center gap-4 xl:gap-6 2xl:gap-8">
+              <PublicNavItems isScrolled={isScrolled} />
+            </ul>
+            
             {/* Show Book Now only for non-authenticated users */}
             {!isAuthenticated && (
               <BookNowButton variant="desktop" />
             )}
+            
             {/* Role-specific navigation items */}
-            {isAuthenticated && renderRoleNavItems()}
+            {isAuthenticated && (
+              <ul className="flex items-center gap-4 xl:gap-6">
+                {renderRoleNavItems()}
+              </ul>
+            )}
+            
             {/* User menu (Dashboard link, user name, logout button) */}
             <UserMenu
               user={user}
@@ -125,17 +134,26 @@ export const Navbar: React.FC = () => {
               onLogout={handleLogout}
               isLoggingOut={isLoggingOut}
             />
-          </ul>
+          </div>
 
           {/* Tablet Nav (hidden on mobile and desktop) */}
-          <ul className="hidden md:flex lg:hidden items-center space-x-2">
-            <PublicNavItems isScrolled={isScrolled} />
+          <div className="hidden md:flex lg:hidden items-center justify-end flex-1 gap-3">
+            <ul className="flex items-center gap-3">
+              <PublicNavItems isScrolled={isScrolled} />
+            </ul>
+            
             {/* Show Book Now only for non-authenticated users */}
             {!isAuthenticated && (
               <BookNowButton variant="tablet" />
             )}
+            
             {/* Role-specific navigation items */}
-            {isAuthenticated && renderRoleNavItems()}
+            {isAuthenticated && (
+              <ul className="flex items-center gap-3">
+                {renderRoleNavItems()}
+              </ul>
+            )}
+            
             {/* User menu */}
             <UserMenu
               user={user}
@@ -144,11 +162,11 @@ export const Navbar: React.FC = () => {
               onLogout={handleLogout}
               isLoggingOut={isLoggingOut}
             />
-          </ul>
+          </div>
 
           {/* Mobile menu button */}
           <button
-            className={`md:hidden p-2 rounded-xl transition-all duration-300 ${
+            className={`lg:hidden p-2 rounded-xl transition-all duration-300 ${
               isScrolled 
                 ? 'text-neutral-900 hover:bg-neutral-100' 
                 : 'text-white hover:bg-neutral-800'
@@ -163,7 +181,7 @@ export const Navbar: React.FC = () => {
 
         {/* Mobile Menu */}
         <div 
-          className={`fixed inset-0 md:hidden transition-all duration-300 ease-in-out ${
+          className={`fixed inset-0 lg:hidden transition-all duration-300 ease-in-out ${
             isOpen ? 'opacity-100 visible' : 'opacity-0 invisible'
           }`}
           style={{ zIndex: 90 }}

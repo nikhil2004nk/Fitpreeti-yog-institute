@@ -32,46 +32,45 @@ export const UserMenu: React.FC<UserMenuProps> = ({
 
   if (!isAuthenticated) {
     return (
-      <li className="ml-4">
-        <NavLink
-          to={ROUTES.LOGIN}
-          className="px-4 xl:px-6 py-2 xl:py-3 bg-gray-600 text-white font-semibold rounded-xl text-sm xl:text-base
-                     hover:bg-gray-700 hover:shadow-lg transition-all duration-300 flex items-center space-x-2"
-          onClick={onNavClick}
-        >
-          <User className="h-4 w-4" />
-          <span>Login</span>
-        </NavLink>
-      </li>
+      <NavLink
+        to={ROUTES.LOGIN}
+        className="px-4 xl:px-6 py-2 xl:py-2.5 bg-gray-600 text-white font-semibold rounded-xl text-sm xl:text-base
+                   hover:bg-gray-700 hover:shadow-lg transition-all duration-300 flex items-center space-x-2 whitespace-nowrap"
+        onClick={onNavClick}
+      >
+        <User className="h-4 w-4" />
+        <span>Login</span>
+      </NavLink>
     );
   }
 
   if (!user) return null;
 
   return (
-    <li className="ml-4 flex items-center space-x-3">
+    <div className="flex items-center gap-3 xl:gap-4">
       <NavLink
         to={ROUTES.DASHBOARD}
-        className={`text-sm hidden xl:block font-semibold hover:underline transition-all ${
+        className={`text-sm xl:text-base font-semibold hover:underline transition-all whitespace-nowrap ${
           isScrolled ? 'text-gray-700 hover:text-red-600' : 'text-white hover:text-red-400'
         }`}
         onClick={onNavClick}
       >
         Dashboard
       </NavLink>
-      <span className={`text-sm hidden xl:block ${isScrolled ? 'text-gray-700' : 'text-white'}`}>
+      <span className={`text-sm xl:text-base hidden lg:block ${isScrolled ? 'text-gray-700' : 'text-white'} whitespace-nowrap`}>
         {user.name}
       </span>
       <button
         onClick={handleLogout}
         disabled={isLoggingOut}
-        className="px-4 xl:px-6 py-2 xl:py-3 bg-gray-600 text-white font-semibold rounded-xl text-sm xl:text-base
-                   hover:bg-gray-700 hover:shadow-lg transition-all duration-300 disabled:opacity-50 flex items-center space-x-2"
+        className="px-4 xl:px-6 py-2 xl:py-2.5 bg-gray-600 text-white font-semibold rounded-xl text-sm xl:text-base
+                   hover:bg-gray-700 hover:shadow-lg transition-all duration-300 disabled:opacity-50 flex items-center space-x-2 whitespace-nowrap"
       >
         <LogOut className="h-4 w-4" />
-        <span>Logout</span>
+        <span className="hidden xl:inline">Logout</span>
+        <span className="xl:hidden">Out</span>
       </button>
-    </li>
+    </div>
   );
 };
 

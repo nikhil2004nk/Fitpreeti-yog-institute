@@ -6,10 +6,6 @@ interface CustomerNavItemsProps {
 }
 
 export const CustomerNavItems: React.FC<CustomerNavItemsProps> = ({ isScrolled }) => {
-  return (
-    <li>
-      <CustomerNavDropdown isScrolled={isScrolled} />
-    </li>
-  );
+  return <CustomerNavDropdown isScrolled={isScrolled} />;
 };
 

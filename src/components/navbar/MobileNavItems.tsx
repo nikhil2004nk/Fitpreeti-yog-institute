@@ -1,5 +1,5 @@
 import { NavLink } from 'react-router-dom';
-import { LogOut, User } from 'lucide-react';
+import { LogOut, User, Shield, Users, UserCheck, Package, Star, Calendar, BookOpen, FileText } from 'lucide-react';
 import { ROUTES } from '../../constants/routes';
 import type { User as UserType } from '../../types';
 import { BookNowButton } from './BookNowButton';
@@ -41,6 +41,24 @@ export const MobileNavItems: React.FC<MobileNavItemsProps> = ({
     { to: ROUTES.CONTACT, label: 'Contact' },
   ];
 
+  // Admin menu items
+  const adminMenuItems = [
+    { to: ROUTES.ADMIN_USERS, label: 'User Management', icon: Users },
+    { to: ROUTES.ADMIN_TRAINERS, label: 'Trainer Management', icon: UserCheck },
+    { to: ROUTES.ADMIN_SERVICES, label: 'Service Management', icon: Package },
+    { to: ROUTES.ADMIN_REVIEWS, label: 'Review Management', icon: Star },
+    { to: ROUTES.ADMIN_CLASS_SCHEDULES, label: 'Class Schedule', icon: Calendar },
+    { to: ROUTES.ADMIN_BOOKINGS, label: 'Booking Management', icon: BookOpen },
+    { to: ROUTES.ADMIN_CMS, label: 'CMS Management', icon: FileText },
+  ];
+
+  // Customer menu items
+  const customerMenuItems = [
+    { to: ROUTES.CUSTOMER_BOOKINGS, label: 'My Bookings', icon: Calendar },
+    { to: ROUTES.CUSTOMER_PROFILE, label: 'My Profile', icon: User },
+    { to: ROUTES.BOOKING, label: 'Book a Class', icon: BookOpen },
+  ];
+
   return (
     <>
       {navItems.map((item) => (
@@ -61,7 +79,79 @@ export const MobileNavItems: React.FC<MobileNavItemsProps> = ({
           </NavLink>
         </li>
       ))}
-      <li className="mt-2 px-4 pb-4 space-y-2">
+      
+      {/* Role-based navigation section */}
+      {isAuthenticated && user && (
+        <>
+          {user.role === 'admin' && (
+            <>
+              <li className="border-t-2 border-gray-200 mt-2 pt-2">
+                <div className="px-6 py-2 text-xs font-semibold text-gray-500 uppercase tracking-wider">
+                  Admin Panel
+                </div>
+              </li>
+              {adminMenuItems.map((item) => {
+                const Icon = item.icon;
+                return (
+                  <li key={item.to} className="border-b border-gray-100 last:border-0">
+                    <NavLink
+                      to={item.to}
+                      onClick={() => handleNavClick(item.to)}
+                      className={({ isActive }) =>
+                        `block py-3 px-6 pl-12 font-medium transition-colors text-sm ${
+                          isActive 
+                            ? 'text-red-600 bg-red-50 font-semibold' 
+                            : 'text-gray-700 hover:bg-gray-50 hover:text-red-600'
+                        }`
+                      }
+                    >
+                      <div className="flex items-center space-x-3">
+                        <Icon className="h-4 w-4" />
+                        <span>{item.label}</span>
+                      </div>
+                    </NavLink>
+                  </li>
+                );
+              })}
+            </>
+          )}
+          
+          {user.role === 'customer' && (
+            <>
+              <li className="border-t-2 border-gray-200 mt-2 pt-2">
+                <div className="px-6 py-2 text-xs font-semibold text-gray-500 uppercase tracking-wider">
+                  My Account
+                </div>
+              </li>
+              {customerMenuItems.map((item) => {
+                const Icon = item.icon;
+                return (
+                  <li key={item.to} className="border-b border-gray-100 last:border-0">
+                    <NavLink
+                      to={item.to}
+                      onClick={() => handleNavClick(item.to)}
+                      className={({ isActive }) =>
+                        `block py-3 px-6 pl-12 font-medium transition-colors text-sm ${
+                          isActive 
+                            ? 'text-red-600 bg-red-50 font-semibold' 
+                            : 'text-gray-700 hover:bg-gray-50 hover:text-red-600'
+                        }`
+                      }
+                    >
+                      <div className="flex items-center space-x-3">
+                        <Icon className="h-4 w-4" />
+                        <span>{item.label}</span>
+                      </div>
+                    </NavLink>
+                  </li>
+                );
+              })}
+            </>
+          )}
+        </>
+      )}
+
+      <li className="mt-2 px-4 pb-4 space-y-2 border-t-2 border-gray-200 pt-4">
         {/* Show Book Now button for customers and non-authenticated users */}
         {(!isAuthenticated || user?.role === 'customer') && (
           <BookNowButton variant="mobile" onNavClick={handleBookNowClick} />
