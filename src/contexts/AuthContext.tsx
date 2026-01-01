@@ -35,7 +35,8 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
   useEffect(() => {
     const checkAuth = async () => {
       try {
-        const userData = await authService.getProfile();
+        // Use silent method to avoid redirecting on initial load
+        const userData = await authService.getProfileSilent();
         setUser(userData);
       } catch (error) {
         // User is not authenticated

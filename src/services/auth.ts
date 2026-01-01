@@ -31,6 +31,7 @@ class AuthService {
     });
   }
 
+  // Get profile with automatic token refresh (redirects on failure)
   async getProfile(): Promise<User> {
     const response = await apiRequestWithRefresh<{ user: User; message: string }>('/auth/profile', {
       method: 'GET',
@@ -52,6 +53,32 @@ class AuthService {
       throw new Error('User data not found in profile response');
     }
     return user;
+  }
+
+  // Get profile without redirecting (for initial auth check)
+  async getProfileSilent(): Promise<User | null> {
+    try {
+      const response = await apiRequest<{ user: User; message: string }>('/auth/profile', {
+        method: 'GET',
+      });
+      // Handle nested response structure: response.data.user or response.user
+      const data = response.data as unknown;
+      let user: User | undefined;
+      
+      // Check if response.data has a user property (nested structure)
+      if (data && typeof data === 'object' && data !== null && 'user' in data) {
+        user = (data as { user: User; message: string }).user;
+      } 
+      // Check if user is directly in response
+      else if (response.user) {
+        user = response.user as unknown as User;
+      }
+      
+      return user || null;
+    } catch (error) {
+      // Silently fail - user is not authenticated
+      return null;
+    }
   }
 
   async refreshToken(): Promise<ApiResponse<{ message: string }>> {
