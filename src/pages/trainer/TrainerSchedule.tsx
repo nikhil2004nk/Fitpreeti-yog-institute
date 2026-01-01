@@ -3,10 +3,10 @@ import { Navbar } from '../../components/layout/Navbar';
 import { Footer } from '../../components/layout/Footer';
 import { classScheduleService, type ClassSchedule } from '../../services/classSchedule';
 import { useAuth } from '../../contexts/AuthContext';
-import { Calendar, Clock, Users, MapPin, Filter, Search } from 'lucide-react';
+import { Calendar, Clock, Users, Filter, Search } from 'lucide-react';
 
 export const TrainerSchedule: React.FC = () => {
-  const { user } = useAuth();
+  const { user: currentUser } = useAuth();
   const [schedules, setSchedules] = useState<ClassSchedule[]>([]);
   const [filteredSchedules, setFilteredSchedules] = useState<ClassSchedule[]>([]);
   const [loading, setLoading] = useState(true);
@@ -26,11 +26,14 @@ export const TrainerSchedule: React.FC = () => {
     try {
       setLoading(true);
       setError('');
-      // TODO: Filter by trainer_id when API supports it
       const data = await classScheduleService.getAllSchedules();
       // Filter schedules for this trainer (if trainer_id matches user.id)
-      // For now, show all schedules
-      setSchedules(data);
+      if (currentUser?.id) {
+        const trainerSchedules = data.filter(s => s.trainer_id === currentUser.id);
+        setSchedules(trainerSchedules);
+      } else {
+        setSchedules(data);
+      }
     } catch (err: any) {
       setError(err?.message || 'Failed to load schedules');
     } finally {
@@ -50,9 +53,8 @@ export const TrainerSchedule: React.FC = () => {
     if (searchTerm) {
       const term = searchTerm.toLowerCase();
       filtered = filtered.filter(s => 
-        s.class_name?.toLowerCase().includes(term) ||
-        s.service_name?.toLowerCase().includes(term) ||
-        s.location?.toLowerCase().includes(term)
+        s.title?.toLowerCase().includes(term) ||
+        (s.description && s.description.toLowerCase().includes(term))
       );
     }
 
@@ -182,13 +184,17 @@ export const TrainerSchedule: React.FC = () => {
                   <div className="flex items-start justify-between mb-4">
                     <div className="flex-1">
                       <h3 className="text-xl font-bold text-gray-900 mb-1">
-                        {schedule.class_name || schedule.service_name || 'Class'}
+                        {schedule.title || 'Class'}
                       </h3>
                       <span className={`inline-block px-3 py-1 rounded-full text-xs font-semibold ${getStatusColor(schedule.status)}`}>
                         {schedule.status}
                       </span>
                     </div>
                   </div>
+
+                  {schedule.description && (
+                    <p className="text-gray-600 mb-3 text-sm">{schedule.description}</p>
+                  )}
 
                   <div className="space-y-3">
                     {/* Date & Time */}
@@ -203,21 +209,11 @@ export const TrainerSchedule: React.FC = () => {
                       </div>
                     </div>
 
-                    {/* Location */}
-                    {schedule.location && (
-                      <div className="flex items-center space-x-3 text-gray-600">
-                        <MapPin className="h-5 w-5 text-gray-400 flex-shrink-0" />
-                        <span>{schedule.location}</span>
-                      </div>
-                    )}
-
-                    {/* Capacity */}
-                    {schedule.capacity && (
-                      <div className="flex items-center space-x-3 text-gray-600">
-                        <Users className="h-5 w-5 text-gray-400 flex-shrink-0" />
-                        <span>Capacity: {schedule.current_bookings || 0} / {schedule.capacity}</span>
-                      </div>
-                    )}
+                    {/* Participants */}
+                    <div className="flex items-center space-x-3 text-gray-600">
+                      <Users className="h-5 w-5 text-gray-400 flex-shrink-0" />
+                      <span>Participants: {schedule.current_participants || 0} / {schedule.max_participants || 0}</span>
+                    </div>
                   </div>
                 </div>
               ))}
